@@ -1,0 +1,20 @@
+# ── 本机运行数据，绝不入库 ─────────────────────────────
+.browser/
+.workbuddy/
+dist/
+
+# ── 开发期产物、预览图 ────────────────────────────────
+tools/shots/
+tools/_cp*/
+shot_vitals.png
+*.lnk
+
+# LibreHardwareMonitor 的原始安装包（仓库里已带解压好的程序本体）
+tools/lhm.zip
+
+# ── 杂项 ─────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.log
+Thumbs.db
+desktop.ini

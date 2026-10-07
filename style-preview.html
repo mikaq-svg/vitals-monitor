@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitals // STYLE PREVIEW</title>
+<style>
+/* =====================================================================
+   风格预览板
+   不连后端，纯静态：把主界面在用的那套 CSS 变量、质感钩子和主题
+   专属规则原样搬过来，各套主题并排摆着看。真正的皮肤在 index.html。
+   ===================================================================== */
+:root{
+  --bg:#080808;
+  --panel:#0d0d0d;
+  --panel2:#121212;
+  --panel3:#171717;
+  --line:#1e1e1e;
+  --line2:#2c2c2c;
+  --line3:#3d3d3d;
+  --txt:#ffffff;
+  --fg:#ffffff;
+  --fg-inv:#000000;
+  --dim:#9a9a9a;
+  --dim2:#5c5c5c;
+  --dim3:#3a3a3a;
+  --mono:ui-monospace,"SFMono-Regular","SF Mono",Menlo,Consolas,"Liberation Mono","Courier New",monospace;
+  --well:#0a0a0a;
+  --well2:#161616;
+  --well3:#1a1a1a;
+  --thumb:#2a2a2a;
+  --thumb-h:#454545;
+  --grid-h:#1c1c1c;
+  --grid-v:#141414;
+  --axis:#3a3a3a;
+  --accent:#8fb8d8;
+  --accent2:#5c7f99;
+  --accentbg:rgba(143,184,216,.13);
+  --radius:0px;
+  --bar-radius:0px;
+  --seg-radius:0px;
+  --tag-radius:0px;
+  --panel-img:none;
+  --panel-img-size:100% 46%;
+  --bevel:0 0 0 transparent;
+  --lift:0 0 0 transparent;
+  --btn-img:none;
+  --bar-img:none;
+  --bar-gloss:transparent;
+  --bar-inset:transparent;
+  --scanline:transparent;
+}
+
+/* ============================================================
+   Modern
+   苹果那一挂。核心是“少”：没有花纹、没有彩色渐变块、没有描边线，
+   层次靠白底 + 大留白 + 毛玻璃撑出来。
+   玻璃是这个主题的主角：面板压得很透（.38 白），底下一层淡彩光斑负责被
+   backdrop-filter 糊开 —— 没有那层光，玻璃就完全看不出来。
+   清透的诀窍是三条一起成立：面板要淡、边要锐、投影要收。
+   两处刻意的取舍：
+   - 圆角给到 20px，比其它主题都大。苹果的角是连续曲率的超椭圆，
+     CSS 只有普通圆角，只能靠加大半径去接近那种手感。
+   ============================================================ */
+[data-theme="modern"]{
+  /* 背景：近白底 + 四团淡彩光斑（蓝 / 紫 / 粉 / 青）。中间一段是平的、
+     边缘才渐隐，所以它是个"有形状的东西"，不是一片均匀的淡底。
+     光斑刻意收小、并且摆在面板边上：玻璃最看得出来的一刻，
+     就是同一块颜色一半在玻璃里（糊的）、一半在外面（实的）。
+     铺满一屏只会变成粉彩壁纸，白就没了。 */
+  --bg:radial-gradient(17% 15% at 31% 10%,rgba(126,170,255,.46) 0%,
+       rgba(126,170,255,.28) 40%,rgba(126,170,255,0) 100%) no-repeat,
+       radial-gradient(16% 14% at 85% 30%,rgba(190,140,255,.40) 0%,
+       rgba(190,140,255,.24) 40%,rgba(190,140,255,0) 100%) no-repeat,
+       radial-gradient(15% 14% at 46% 30%,rgba(255,140,182,.36) 0%,
+       rgba(255,140,182,.22) 40%,rgba(255,140,182,0) 100%) no-repeat,
+       radial-gradient(15% 14% at 16% 70%,rgba(104,220,198,.34) 0%,
+       rgba(104,220,198,.20) 40%,rgba(104,220,198,0) 100%) no-repeat,
+       radial-gradient(90% 70% at 52% 38%,rgba(172,192,255,.10) 0%,
+       rgba(172,192,255,0) 76%) no-repeat,
+       linear-gradient(180deg,#fbfbfd 0%,#f5f5f7 52%,#eef0f4 100%);
+  --panel:rgba(255,255,255,.38);
+  --panel2:rgba(255,255,255,.50);
+  --panel3:rgba(255,255,255,.82);
+  --dragfrost:blur(5px) saturate(150%);
+  --line:rgba(0,0,0,.055);
+  --line2:rgba(0,0,0,.075);
+  --line3:rgba(0,0,0,.12);
+  --txt:#1d1d1f;
+  --fg:#000000;
+  --fg-inv:#ffffff;
+  --dim:#6e6e73;
+  --dim2:#86868b;
+  --dim3:#aeaeb2;
+  /* 苹果用 SF Pro，Windows 上没有。Segoe UI Variable 是微软对着做的
+     那套几何无衬线，气质上最接近，拿它顶上。 */
+  --mono:"Segoe UI Variable Text","Segoe UI","Microsoft YaHei",sans-serif;
+  --well:rgba(0,0,0,.03);
+  --well2:rgba(0,0,0,.045);
+  --well3:rgba(0,0,0,.06);
+  --thumb:rgba(0,0,0,.18);
+  --thumb-h:rgba(0,0,0,.30);
+  --grid-h:rgba(0,0,0,.05);
+  --grid-v:rgba(0,0,0,.03);
+  --axis:#86868b;
+  --accent:#0071e3;
+  --accent2:#0066cc;
+  --accentbg:rgba(0,113,227,.10);
+  --radius:20px;
+  --bar-radius:99px;
+  --seg-radius:99px;
+  --tag-radius:99px;
+  /* 玻璃的两层高光：一道斜光扫过左上（像光打在玻璃面上），
+     再叠一层顶部渐隐的反光。两层都很淡，不能变成“刷了道白漆”。 */
+  /* 玻璃的两层高光：一条亮带压在顶边（光打在玻璃上沿），
+     加一道很斜的弱光扫过左上角。两条都收得很短 —— 铺满整块
+     就成白漆了，也会把背后透上来的颜色盖没。 */
+  --panel-img:linear-gradient(172deg,rgba(255,255,255,.54) 0%,
+              rgba(255,255,255,.16) 12%,rgba(255,255,255,.03) 24%,
+              rgba(255,255,255,0) 38%),
+              linear-gradient(120deg,rgba(255,255,255,.22) 0%,
+              rgba(255,255,255,.05) 14%,rgba(255,255,255,0) 30%);
+  --panel-img-size:100% 100%,100% 100%;
+  /* 玻璃的边是“一圈亮线 + 一条更亮的上沿”，不是实边框。
+     没这条亮线，玻璃就只是一块糊掉的半透明白，不成形。 */
+  --bevel:inset 0 1px 0 rgba(255,255,255,1),
+          inset 0 0 0 1px rgba(255,255,255,.90),
+          inset 0 -1px 0 rgba(255,255,255,.50);
+  --lift:0 1px 2px rgba(0,0,0,.035),0 8px 22px rgba(0,0,0,.06);
+  --btn-img:linear-gradient(180deg,rgba(255,255,255,.84),rgba(255,255,255,.06));
+  --bar-img:linear-gradient(180deg,#0a84ff 0%,#0066cc 100%);
+  --bar-gloss:rgba(255,255,255,.46);
+  --bar-inset:rgba(0,0,0,.06);
+  --scanline:transparent;
+  --pulse-a:rgba(0,113,227,.30);
+  --pulse-b:rgba(0,113,227,0);
+  --chart-cap:round;
+  --chart-fill-op:.10;
+}
+/* 毛玻璃。模糊比 Aero 重，saturate 拉到 210%：背后的淡彩光被化开之后
+   颜色会更明显，玻璃才显得“清透”，否则就只是一层发灰的糊。 */
+[data-theme="modern"] .panel,
+[data-theme="modern"] .side,
+[data-theme="modern"] .bar-top,
+[data-theme="modern"] .bar-top,
+[data-theme="modern"] .statusbar{backdrop-filter:blur(28px) saturate(210%);
+  -webkit-backdrop-filter:blur(28px) saturate(210%);}
+[data-theme="modern"] .main{background:transparent;}
+[data-theme="modern"] .side{background:rgba(255,255,255,.28);
+  border-right:1px solid rgba(0,0,0,.06);
+  box-shadow:1px 0 0 rgba(255,255,255,.60);}
+[data-theme="modern"] .bar-top,[data-theme="modern"] .bar-top{
+  background:rgba(255,255,255,.40);box-shadow:inset 0 -1px 0 rgba(0,0,0,.05),
+  inset 0 1px 0 rgba(255,255,255,.82);}
+[data-theme="modern"] .brand .mark{border-radius:8px;
+  background:linear-gradient(180deg,#ffffff,#ebeced);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.055),0 1px 3px rgba(0,0,0,.10);}
+[data-theme="modern"] .brand .mark::after{border-radius:4px;
+  background:linear-gradient(180deg,#0a84ff,#0071e3);}
+/* 导航选中态：苹果是圆角浅色块，不是左边一条竖线 */
+[data-theme="modern"] .navitem{margin:0 10px;padding:7px 12px;border-radius:10px;
+  border-left-color:transparent;color:#6e6e73;}
+[data-theme="modern"] .navitem.on{background:rgba(0,113,227,.10);color:#0071e3;
+  border-left-color:transparent;}
+[data-theme="modern"] .navitem em{color:#aeaeb2;}
+[data-theme="modern"] .sidefoot{color:#86868b;}
+[data-theme="modern"] .panel{border:1px solid rgba(0,0,0,.06);}
+[data-theme="modern"] .panel>.hd{background:rgba(255,255,255,.34);
+  border-bottom:1px solid rgba(0,0,0,.05);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.86);}
+/* 进度条：苹果的槽是一片平灰，没有内阴影 */
+[data-theme="modern"] .bar{background:rgba(0,0,0,.055);box-shadow:none;}
+[data-theme="modern"] .bar>div{box-shadow:none;}
+[data-theme="modern"] .memstack{background:rgba(0,0,0,.055);box-shadow:none;}
+[data-theme="modern"] .memstack .f{background:linear-gradient(180deg,#ffffff,#e8e8ed);}
+[data-theme="modern"] .memstack .u{color:#fff;}
+[data-theme="modern"] th{border-bottom:1px solid rgba(0,0,0,.07);background:transparent;}
+[data-theme="modern"] .kpi .lbl s,
+[data-theme="modern"] .tag{border:1px solid rgba(0,0,0,.07);border-radius:99px;
+  background:rgba(255,255,255,.80);color:#6e6e73;padding:1px 7px;}
+[data-theme="modern"] .stat{color:#6e6e73;}
+[data-theme="modern"] .statusbar{color:#86868b;background:rgba(255,255,255,.34);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.80);}
+[data-theme="modern"] .statusbar b{color:#1d1d1f;}
+[data-theme="modern"] .seg button.on{background-image:var(--bar-img);color:#fff;
+  border-radius:99px;box-shadow:none;}
+[data-theme="modern"] .events .lv.ALERT{
+  color:#fff;background:#ff3b30;border-radius:99px;padding:0 7px;}
+[data-theme="modern"] .notice .k{background:#ff3b30;color:#fff;border-radius:99px;}
+[data-theme="modern"] .kpi.alarm{box-shadow:0 0 0 2px rgba(255,59,48,.42),var(--lift);}
+/* 弹层：默认那个 0 10px 30px rgba(0,0,0,.5) 是给深色主题压场用的，
+   在浅底上会砸出一块很脏的黑影，换成苹果那种几乎看不见的浮起。 */
+[data-theme="modern"] .accpop{box-shadow:0 12px 32px rgba(0,0,0,.13),
+  0 0 0 1px rgba(0,0,0,.05);}
+[data-theme="modern"]::-webkit-scrollbar-track{background:transparent;}
+[data-theme="modern"] ::-webkit-scrollbar-track{background:transparent;}
+[data-theme="modern"] ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);
+  background-clip:padding-box;border:2px solid transparent;border-radius:99px;}
+/* 读数必须等宽对齐，不能跟着 UI 字体变比例字 */
+[data-theme="modern"] .kpi .val,[data-theme="modern"] .temp .num,
+[data-theme="modern"] td.mono,[data-theme="modern"] #clock,
+[data-theme="modern"] .meter .row b,[data-theme="modern"] .core .v,
+[data-theme="modern"] .hostline b,[data-theme="modern"] .kv>div:nth-child(even){
+  font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;}
+/* ============================================================
+   Frutiger Aero
+   2004-2013 那一波。核心是"自然 + 科技 + 乐观"：清透的蓝天、
+   草地、水珠、玻璃气泡。底色不是糖果色撞色，而是自然界那种
+   干净的天空蓝 → 水青；质感靠玻璃高光和拟物反光，光泽是水润的，
+   不是塑料的。
+   ============================================================ */
+[data-theme="aero"]{
+  /* 背景：清透天空蓝 → 水青，右上角一团阳光，下方一道草地的暖绿。
+     三块都是柔和的径向光，不是硬渐变——Aero 的天是"亮起来"的。 */
+  --bg:radial-gradient(120% 85% at 78% -14%,rgba(255,255,255,.92) 0%,
+       rgba(198,238,255,.5) 26%,rgba(198,238,255,0) 58%) no-repeat,
+       radial-gradient(95% 60% at 50% 118%,rgba(140,214,150,.42) 0%,
+       rgba(140,214,150,0) 62%) no-repeat,
+       radial-gradient(60% 50% at 8% 30%,rgba(255,255,255,.34) 0%,
+       rgba(255,255,255,0) 70%) no-repeat,
+       linear-gradient(180deg,#7fc7ee 0%,#9fd8f2 34%,#bfe6f4 58%,#d7eee2 100%);
+  --panel:rgba(255,255,255,.44);
+  --panel2:rgba(255,255,255,.58);
+  --panel3:rgba(255,255,255,.80);
+  --dragfrost:blur(5px) saturate(150%);
+  --line:rgba(120,160,190,.26);
+  --line2:rgba(110,150,185,.38);
+  --line3:rgba(85,125,165,.55);
+  --txt:#0d2c42;
+  --fg:#08253c;
+  --fg-inv:#ffffff;
+  --dim:#2e5372;
+  --dim2:#3e6386;
+  --dim3:#6b8caa;
+  /* 字形：Aero 那个年代是"人文无衬线"——圆润、开阔、亲和。
+     Tahoma 比 Verdana 更窄一点，跟玻璃质感更配。 */
+  /* 字形：Aero 那个年代是"圆润的人文无衬线"。Trebuchet MS / Candara
+     转角偏圆、字面开阔，比纯正的黑体更"软"、更亲和一些。 */
+  --mono:"Trebuchet MS","Candara","Segoe UI","Microsoft YaHei",sans-serif;
+  --well:rgba(160,195,215,.26);
+  --well2:rgba(155,190,215,.28);
+  --well3:rgba(150,185,210,.24);
+  --thumb:#9dc2d8;
+  --thumb-h:#7eaac9;
+  --grid-h:rgba(110,150,185,.22);
+  --grid-v:rgba(110,150,185,.12);
+  --axis:#7d9cb5;
+  --accent:#1f8fe0;
+  --accent2:#1565b8;
+  --accentbg:rgba(31,143,224,.16);
+  --radius:12px;
+  --bar-radius:99px;
+  --seg-radius:99px;
+  --tag-radius:99px;
+  /* Aero 的光泽是水润的：高光不是一条死板的斜带，而是顶部一团圆润的
+     水珠光（椭圆），像玻璃上挂着一层水膜 */
+  --panel-img:radial-gradient(120% 60% at 30% -12%,rgba(255,255,255,.95) 0%,
+              rgba(255,255,255,.42) 34%,rgba(255,255,255,.08) 62%,
+              rgba(255,255,255,0) 80%);
+  --panel-img-size:106% 62%;
+  /* 玻璃壳的四层边：顶棱水光、底棱淡绿反光、整圈白 rim、内侧水青 */
+  --bevel:inset 0 1px 0 rgba(255,255,255,.98),
+          inset 0 -1px 0 rgba(120,175,150,.20),
+          inset 0 0 0 1px rgba(255,255,255,.70),
+          inset 0 0 16px rgba(180,230,255,.24);
+  --lift:0 1px 2px rgba(20,70,110,.14),0 8px 24px rgba(20,70,110,.16);
+  --btn-img:linear-gradient(180deg,rgba(255,255,255,.94),
+            rgba(255,255,255,.28) 52%,rgba(170,220,240,.20));
+  --bar-img:linear-gradient(180deg,#8fe3f5 0%,#35b1e8 46%,#1a7fc4 100%);
+  --bar-gloss:rgba(255,255,255,.72);
+  --bar-inset:rgba(50,110,150,.26);
+  --scanline:transparent;
+  --pulse-a:rgba(31,143,224,.38);
+  --pulse-b:rgba(31,143,224,0);
+  --chart-cap:round;
+  --chart-fill-op:.18;
+}
+/* 半透明玻璃：背景晕开一层，玻璃上挂着水汽 */
+[data-theme="aero"] .panel,
+[data-theme="aero"] .side,
+[data-theme="aero"] .bar-top,
+[data-theme="aero"] .bar-top,
+[data-theme="aero"] .statusbar{backdrop-filter:blur(15px) saturate(155%);
+  -webkit-backdrop-filter:blur(15px) saturate(155%);}
+[data-theme="aero"] .main{background:transparent;}
+[data-theme="aero"] .bar-top,[data-theme="aero"] .bar-top{
+  background:linear-gradient(180deg,rgba(255,255,255,.66) 0%,rgba(238,248,253,.34) 60%,rgba(220,240,248,.28));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 1px 4px rgba(20,70,110,.18);}
+[data-theme="aero"] .side{background:rgba(255,255,255,.20);}
+[data-theme="aero"] .statusbar{
+  background:linear-gradient(180deg,rgba(238,248,253,.34),rgba(218,238,246,.26));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.88);}
+[data-theme="aero"] .navitem.on{
+  background:linear-gradient(180deg,#6cc6ef,#1f8fe0);color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(0,60,120,.25),
+    0 1px 4px rgba(20,60,110,.32);
+  border-radius:99px;}
+[data-theme="aero"] .navitem.on{
+  background:linear-gradient(180deg,rgba(80,180,235,.34),rgba(31,135,208,.18));
+  border-radius:0 99px 99px 0;}
+[data-theme="aero"] .brand .mark{
+  border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(220,238,246,.5));
+  box-shadow:inset 0 1px 0 #fff,0 1px 3px rgba(20,70,110,.24);}
+[data-theme="aero"] .brand .mark::after{
+  border-radius:3px;background:linear-gradient(180deg,#8fe3f5,#1f8fe0);}
+[data-theme="aero"] .panel{border:1px solid rgba(255,255,255,.66);}
+[data-theme="aero"] .panel>.hd{background:linear-gradient(180deg,rgba(255,255,255,.66) 0%,rgba(238,248,253,.34) 62%,rgba(226,242,250,.28) 100%);
+  border-bottom:1px solid rgba(110,150,185,.28);}
+[data-theme="aero"] .side{border-right:1px solid rgba(110,150,185,.35);}
+[data-theme="aero"] .navitem{color:#3f6390;}
+[data-theme="aero"] .navitem em{color:#7a99b8;}
+[data-theme="aero"] .navitem.on{color:#0b2440;}
+[data-theme="aero"] .sidefoot{color:#6484a0;}
+/* 进度条凹槽：玻璃里的那道水槽 */
+[data-theme="aero"] .bar{background:linear-gradient(180deg,rgba(140,175,205,.42),rgba(196,220,236,.42));
+  box-shadow:inset 0 1px 2px rgba(50,110,150,.42),inset 0 -1px 0 rgba(255,255,255,.85);}
+[data-theme="aero"] .bar>div{box-shadow:inset 0 1px 0 rgba(255,255,255,.8),
+  inset 0 -1px 0 rgba(0,60,120,.22),0 0 5px rgba(53,177,232,.4);}
+/* 小方块标签：水润的玻璃片 */
+[data-theme="aero"] .kpi .lbl s,
+[data-theme="aero"] .tag{
+  border:1px solid rgba(120,160,190,.5);border-radius:4px;
+  background:linear-gradient(180deg,#ffffff,#e4f0f7);color:#3f6390;
+  box-shadow:inset 0 1px 0 #fff,0 1px 1px rgba(20,70,110,.14);padding:1px 5px;}
+[data-theme="aero"] th{border-bottom:1px solid rgba(110,150,185,.35);
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0));}
+[data-theme="aero"] .memstack{
+  background:linear-gradient(180deg,rgba(140,175,205,.34),rgba(196,220,236,.34));
+  box-shadow:inset 0 1px 2px rgba(50,110,150,.4),inset 0 -1px 0 rgba(255,255,255,.8);}
+[data-theme="aero"] .memstack .f{background:linear-gradient(180deg,#ffffff,#e6f1f8);}
+[data-theme="aero"] .stat{color:#41678c;}
+[data-theme="aero"] .statusbar{color:#6484a0;}
+[data-theme="aero"] .statusbar b{color:#3f6390;}
+[data-theme="aero"] .seg button.on{
+  background-image:var(--bar-img);color:#fff;border-radius:99px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55);}
+[data-theme="aero"] .events .lv.ALERT{
+  color:#fff;background:linear-gradient(180deg,#ff6a9c,#e0356f);
+  border-radius:99px;padding:0 6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.45);}
+[data-theme="aero"] .notice .k{
+  background:linear-gradient(180deg,#ff7fa8,#e04a80);color:#fff;border-radius:99px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);}
+[data-theme="aero"] .kpi.alarm{box-shadow:0 0 0 2px rgba(224,53,111,.5),var(--lift);}
+[data-theme="aero"] .memstack .u{color:#fff;}
+[data-theme="aero"]::-webkit-scrollbar-track{background:rgba(150,185,215,.18);}
+[data-theme="aero"] ::-webkit-scrollbar-track{background:rgba(150,185,215,.18);}
+[data-theme="aero"] ::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#8fc2e8,#4a92d0);
+  background-clip:padding-box;border:2px solid transparent;border-radius:99px;}
+/* 读数必须等宽对齐，不能跟着 UI 字体变比例字 */
+[data-theme="aero"] .kpi .val,[data-theme="aero"] .temp .num,
+[data-theme="aero"] td.mono,[data-theme="aero"] #clock,
+[data-theme="aero"] .meter .row b,[data-theme="aero"] .core .v,
+[data-theme="aero"] .hostline b,[data-theme="aero"] .kv>div:nth-child(even){
+  font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;}
+
+/* ============================================================
+   Rococo —— 洛可可
+   18 世纪法国装饰艺术。贝壳卷草、粉彩、金箔描边。
+   底子是奶油粉，阴影偏玫瑰和薰衣草，不用纯黑也不用纯白；
+   面板像一块上釉的瓷器。圆角一律大、曲线一律软、颜色一律浅——
+   洛可可的规矩是不许出现锐利的东西，也不许出现重颜色。
+   ============================================================ */
+[data-theme="rococo"]{
+  /* 底色：统一的一味淡粉。以前是玫瑰/薰衣草/薄荷三团混着，
+     混色一多就"脏"，也不像"淡粉色"。现在压成一整块干净的粉底，
+     只在顶部留一团极淡的白雾当呼吸感，其余全交给粉本身。 */
+  --bg:radial-gradient(78% 62% at 50% -8%,rgba(255,255,255,.62) 0%,
+       rgba(255,255,255,0) 62%) no-repeat,
+       linear-gradient(180deg,#ffeef4 0%,#ffe8f0 52%,#fde2ec 100%);
+  --panel:rgba(255,249,252,.80);
+  --panel2:rgba(255,242,248,.88);
+  --panel3:rgba(255,241,247,.97);
+  --line:rgba(226,152,182,.24);
+  --line2:rgba(226,148,180,.38);
+  --line3:rgba(216,140,176,.52);
+  /* 字色：整体往"玫红棕"里偏，粉底上压得住，又不发灰 */
+  --txt:#5c2c3c;
+  --fg:#6d2f42;
+  --fg-inv:#fff6fa;
+  --dim:#96626f;
+  --dim2:#b07c8a;
+  --dim3:#cb9caa;
+  /* 字形：真正的洛可可味道在"装饰性衬线"上——高对比度的笔画粗细、
+     圆润的收笔。用 Palatino 家族打头，Georgia 兜底（都比 Times 更圆）。 */
+  /* 字形：洛可可要"软、圆润"。衬线体笔画有粗细变化和圆润的收笔，
+     中文配楷体的圆转。这是最"软"的一套。 */
+  --mono:"Palatino Linotype","Book Antiqua",Palatino,"STKaiti","KaiTi","Microsoft YaHei",serif;
+  --well:rgba(214,178,190,.20);
+  --well2:rgba(208,170,184,.24);
+  --well3:rgba(202,164,178,.18);
+  --thumb:#dcb8c4;
+  --thumb-h:#c99aa9;
+  --grid-h:rgba(190,150,170,.16);
+  --grid-v:rgba(190,150,170,.08);
+  --axis:#bd95a1;
+  --accent:#e2679b;
+  --accent2:#c9a24a;
+  --accentbg:rgba(226,103,155,.14);
+  /* 圆角比上一版再放大一档，洛可可不该有任何直角 */
+  --radius:18px;
+  --bar-radius:99px;
+  --seg-radius:99px;
+  --tag-radius:99px;
+  /* 釉面高光：斜上方一团柔光，底下留一点粉的返光 */
+  --panel-img:radial-gradient(100% 82% at 22% -20%,rgba(255,255,255,.95) 0%,
+              rgba(255,255,255,.46) 38%,rgba(255,255,255,0) 76%);
+  --panel-img-size:112% 76%;
+  /* 边：改用柔化的玫瑰唇线替代硬金边，整体收得很轻；
+     内侧一圈漫射暖光，做出"上釉"的柔，而不是靠深色描边。 */
+  --bevel:inset 0 0 0 1px rgba(226,168,190,.50),
+          inset 0 1px 0 rgba(255,255,255,.98),
+          inset 0 -1px 0 rgba(214,150,175,.24),
+          inset 0 0 22px rgba(240,212,224,.34);
+  --lift:0 2px 5px rgba(180,120,145,.09),0 12px 30px rgba(180,120,145,.14);
+  --btn-img:linear-gradient(180deg,rgba(255,255,255,.95),
+            rgba(255,246,250,.44) 54%,rgba(248,214,228,.30));
+  --bar-img:linear-gradient(180deg,#f7b9d4 0%,#e2679b 52%,#bf4d7d 100%);
+  --bar-gloss:rgba(255,255,255,.70);
+  --bar-inset:rgba(158,84,116,.22);
+  --scanline:transparent;
+  --pulse-a:rgba(226,103,155,.34);
+  --pulse-b:rgba(191,77,125,0);
+  --chart-cap:round;
+  --chart-fill-op:.15;
+}
+[data-theme="rococo"] .panel,
+[data-theme="rococo"] .side,
+[data-theme="rococo"] .bar-top,
+[data-theme="rococo"] .bar-top,
+[data-theme="rococo"] .statusbar{backdrop-filter:blur(9px) saturate(125%);
+  -webkit-backdrop-filter:blur(9px) saturate(125%);}
+[data-theme="rococo"] .main{background:transparent;}
+[data-theme="rococo"] .bar-top,[data-theme="rococo"] .bar-top{
+  background:linear-gradient(180deg,rgba(255,249,252,.88) 0%,rgba(255,231,241,.58) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 1px 5px rgba(190,120,150,.13);}
+[data-theme="rococo"] .side{background:rgba(255,248,252,.52);}
+[data-theme="rococo"] .statusbar{
+  background:linear-gradient(0deg,rgba(255,231,241,.60),rgba(255,249,252,.48));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.92);}
+[data-theme="rococo"] .panel{border:1px solid rgba(226,152,182,.46);}
+[data-theme="rococo"] .panel>.hd{
+  background:linear-gradient(180deg,rgba(255,250,253,.92),rgba(255,226,238,.50));
+  border-bottom:1px solid rgba(226,152,182,.36);}
+[data-theme="rococo"] .side{border-right:1px solid rgba(214,144,176,.26);}
+[data-theme="rococo"] .navitem{color:#96626f;}
+[data-theme="rococo"] .navitem em{color:#cb9caa;}
+[data-theme="rococo"] .navitem.on{color:#6d2f42;}
+[data-theme="rococo"] .navitem.on{
+  background:linear-gradient(180deg,#f7b9d4,#e2679b);color:#fff6fa;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.64),0 2px 8px rgba(200,110,150,.27);}
+[data-theme="rococo"] .brand .mark{
+  border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,222,236,.66));
+  box-shadow:inset 0 0 0 1px rgba(226,152,182,.54),0 1px 3px rgba(190,120,150,.21);}
+[data-theme="rococo"] .brand .mark::after{
+  border-radius:6px;background:linear-gradient(180deg,#f7b9d4,#e2679b);}
+[data-theme="rococo"] .bar{
+  background:linear-gradient(180deg,rgba(240,206,222,.38),rgba(255,232,240,.42));
+  box-shadow:inset 0 1px 2px rgba(188,132,158,.26),inset 0 -1px 0 rgba(255,255,255,.90);}
+[data-theme="rococo"] .bar>div{box-shadow:inset 0 1px 0 rgba(255,255,255,.78),
+  inset 0 -1px 0 rgba(168,92,126,.18),0 0 8px rgba(226,103,155,.30);}
+[data-theme="rococo"] .kpi .lbl s,
+[data-theme="rococo"] .tag{
+  border:1px solid rgba(226,152,182,.54);border-radius:99px;
+  background:linear-gradient(180deg,#fffdfe,#ffedf4);color:#96626f;
+  box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(190,120,150,.13);padding:1px 7px;}
+[data-theme="rococo"] th{border-bottom:1px solid rgba(226,152,182,.40);
+  background:linear-gradient(180deg,rgba(255,253,254,.94),rgba(255,255,255,0));}
+[data-theme="rococo"] .memstack{
+  background:linear-gradient(180deg,rgba(240,206,222,.32),rgba(255,232,240,.34));
+  box-shadow:inset 0 1px 2px rgba(188,132,158,.24),inset 0 -1px 0 rgba(255,255,255,.88);}
+[data-theme="rococo"] .memstack .f{background:linear-gradient(180deg,#fffdfe,#ffeef5);}
+[data-theme="rococo"] .stat{color:#96626f;}
+[data-theme="rococo"] .statusbar{color:#b07c8a;}
+[data-theme="rococo"] .statusbar b{color:#76384c;}
+[data-theme="rococo"] .seg button.on{
+  background-image:var(--bar-img);color:#fff6fa;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.56);}
+[data-theme="rococo"] .events{background:rgba(255,249,252,.74);}
+[data-theme="rococo"] .events .lv.ALERT,[data-theme="rococo"] .notice .k{
+  background:linear-gradient(180deg,#ea8db2,#cb5b86);color:#fff6fa;border-radius:99px;
+  padding:0 6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.44);}
+[data-theme="rococo"] .kpi.alarm{box-shadow:0 0 0 1px rgba(203,91,134,.5),var(--lift);}
+[data-theme="rococo"] .sidefoot{color:#c99caa;}
+[data-theme="rococo"]::-webkit-scrollbar-track{background:rgba(240,206,222,.20);}
+[data-theme="rococo"] ::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#efc0d6,#d0a0b6);
+  background-clip:padding-box;border:2px solid transparent;border-radius:99px;}
+/* 洛可可用衬线体做 UI，数字必须单独压回等宽，不然读数会跳 */
+[data-theme="rococo"] .kpi .val,[data-theme="rococo"] .temp .num,
+[data-theme="rococo"] td.mono,[data-theme="rococo"] #clock,
+[data-theme="rococo"] .meter .row b,[data-theme="rococo"] .core .v,
+[data-theme="rococo"] .hostline b,[data-theme="rococo"] .kv>div:nth-child(even){
+  font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;}
+/* "软、圆润"的排版手法：正体不加粗（粗体显硬）、字距略微放开让字
+   喘气、标题用常规字重而不是 700。洛可可的软是靠"留白和圆角"来的，
+   不是靠笔画粗。 */
+[data-theme="rococo"] .panel>.hd h3,
+[data-theme="rococo"] .kpi .lbl,
+[data-theme="rococo"] .brand b,
+[data-theme="rococo"] .bar-top b{
+  font-weight:400;letter-spacing:.04em;}
+[data-theme="rococo"] .panel>.hd h3{letter-spacing:.06em;}
+[data-theme="rococo"] .navitem{letter-spacing:.03em;}
+/* 面板标题用装饰衬线（Palatino 系），字母有衬线脚、粗细对比明显，
+   正是洛可可器物上刻字的那种味道。正文保持圆润的正文衬线，
+   标题用装饰衬线，一轻一重。
+   字号提到 12px：10px 太小，艺术字的字形根本看不出来。 */
+[data-theme="rococo"] .panel>.hd h3,
+[data-theme="rococo"] .brand b{
+  font-family:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  letter-spacing:.09em;}
+[data-theme="rococo"] .panel>.hd h3{font-size:12px;font-weight:400;text-transform:none;}
+[data-theme="rococo"] .panel>.hd{height:34px;}
+[data-theme="rococo"] .navitem{font-size:12.5px;}
+
+/* ============================================================
+   苏联构成主义 —— Soviet
+   1920 年代苏联先锋派：罗德琴科、塔特林、李西茨基那一批。
+   语言非常清楚：红 + 黑 + 米白，大色块，斜切对角线，
+   粗重的无衬线几何字，硬边矩形，工业感。要的是平面上的
+   "力量感"——没有渐变、没有圆角、没有一丝柔软的东西。
+   ============================================================ */
+[data-theme="soviet"]{
+  /* 底色：米白纸 + 一道巨大的红色斜切色块（构成主义的签名）
+     + 左下角一块黑，全是硬边的 linear-gradient，不带一点柔光。 */
+  --bg:linear-gradient(115deg,rgba(211,32,39,.94) 0%,rgba(211,32,39,.94) 18%,
+       rgba(211,32,39,0) 18.02%,rgba(211,32,39,0) 100%) no-repeat,
+       linear-gradient(115deg,rgba(26,26,26,0) 0%,rgba(26,26,26,0) 62%,
+       rgba(26,26,26,.90) 62.02%,rgba(26,26,26,.90) 100%) no-repeat,
+       linear-gradient(90deg,rgba(26,26,26,.06) 0 2px,transparent 2px 100%) no-repeat,
+       linear-gradient(180deg,#efe9dd 0%,#e7e0d2 52%,#ddd5c6 100%);
+  --panel:rgba(244,240,231,.94);
+  --panel2:rgba(236,231,220,.96);
+  --panel3:rgba(248,245,238,.99);
+  --line:rgba(26,26,26,.22);
+  --line2:rgba(26,26,26,.42);
+  --line3:rgba(26,26,26,.68);
+  --txt:#1a1a1a;
+  --fg:#101010;
+  --fg-inv:#efe9dd;
+  --dim:#4a453c;
+  --dim2:#6b6459;
+  --dim3:#8d867a;
+  /* 字形：构成主义海报就是"粗黑几何无衬线"——笔画等宽、块状、
+     压得很紧。Arial Black 打头，配紧字距（见下面的 CSS）。 */
+  /* 字形：构成主义海报要"棱角分明、块状、压迫感"。Arial Black 是超粗的
+     标题字，中文黑体配合，块感拉满。 */
+  --mono:"Arial Black","Arial Bold","SimHei","Microsoft YaHei",sans-serif;
+  --well:rgba(26,26,26,.09);
+  --well2:rgba(26,26,26,.13);
+  --well3:rgba(26,26,26,.07);
+  --thumb:#8d867a;
+  --thumb-h:#d32027;
+  --grid-h:rgba(26,26,26,.16);
+  --grid-v:rgba(26,26,26,.08);
+  --axis:#6b6459;
+  --accent:#d32027;
+  --accent2:#1a1a1a;
+  --accentbg:rgba(211,32,39,.12);
+  --radius:0px;
+  --bar-radius:0px;
+  --seg-radius:0px;
+  --tag-radius:0px;
+  /* 平面：没有高光、没有渐变，只有一道从左下到右上的极淡斜纹（印刷网点的替代） */
+  --panel-img:repeating-linear-gradient(45deg,rgba(26,26,26,.022) 0 1px,transparent 1px 5px);
+  --panel-img-size:100% 100%;
+  /* 硬边框：外黑线 + 内侧一条红，构成主义的海报框 */
+  --bevel:inset 0 0 0 2px rgba(26,26,26,.80),
+          inset 0 0 0 3px rgba(211,32,39,.30);
+  --lift:4px 4px 0 rgba(26,26,26,.20);
+  --dragsh:7px 7px 0 var(--accent);
+  --btn-img:none;
+  --bar-img:linear-gradient(90deg,#1a1a1a 0%,#d32027 100%);
+  --bar-gloss:transparent;
+  --bar-inset:rgba(26,26,26,.28);
+  --scanline:transparent;
+  --pulse-a:rgba(211,32,39,.36);
+  --pulse-b:rgba(211,32,39,0);
+  --chart-cap:butt;
+  --chart-fill-op:.12;
+}
+[data-theme="soviet"] .panel,
+[data-theme="soviet"] .side,
+[data-theme="soviet"] .bar-top,
+[data-theme="soviet"] .bar-top,
+[data-theme="soviet"] .statusbar{backdrop-filter:none;-webkit-backdrop-filter:none;}
+[data-theme="soviet"] .main{background:transparent;}
+[data-theme="soviet"] .bar-top,[data-theme="soviet"] .bar-top{
+  background:#1a1a1a;
+  box-shadow:inset 0 -3px 0 var(--accent);}
+[data-theme="soviet"] .brand b{color:#efe9dd;letter-spacing:.14em;font-weight:900;}
+[data-theme="soviet"] .sidesub{color:#a8a196;}
+[data-theme="soviet"] .sidesub b{color:#efe9dd;}
+[data-theme="soviet"] .bar-top .accbtn{color:#a8a196;border-color:rgba(239,233,221,.24);}
+[data-theme="soviet"] .bar-top .accbtn:hover{color:#efe9dd;}
+[data-theme="soviet"] .side{background:rgba(236,231,220,.92);}
+[data-theme="soviet"] .statusbar{
+  background:#1a1a1a;color:#a8a196;
+  box-shadow:inset 0 3px 0 var(--accent);}
+[data-theme="soviet"] .statusbar b{color:#efe9dd;}
+[data-theme="soviet"] .panel{border:2px solid var(--line3);}
+[data-theme="soviet"] .panel>.hd{
+  background:var(--accent);
+  border-bottom:2px solid #1a1a1a;}
+[data-theme="soviet"] .panel>.hd h3{color:#efe9dd;font-weight:900;letter-spacing:.22em;}
+[data-theme="soviet"] .panel>.hd .meta{color:rgba(239,233,221,.72);}
+[data-theme="soviet"] .side{border-right:3px solid var(--accent);}
+[data-theme="soviet"] .navitem{color:#4a453c;text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
+[data-theme="soviet"] .navitem em{color:#8d867a;}
+[data-theme="soviet"] .navitem.on{
+  background:var(--accent);color:#efe9dd;
+  border-left-color:#1a1a1a;}
+[data-theme="soviet"] .navitem{text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:#6b6459;}
+[data-theme="soviet"] .navitem.on{
+  background:#1a1a1a;color:#efe9dd;
+  box-shadow:inset 0 -3px 0 var(--accent);}
+[data-theme="soviet"] .brand .mark{
+  border:2px solid #efe9dd;border-radius:0;background:transparent;
+  transform:rotate(45deg);box-shadow:none;}
+[data-theme="soviet"] .brand .mark::after{
+  border-radius:0;background:var(--accent);}
+[data-theme="soviet"] .dot{background:var(--accent);box-shadow:none;}
+[data-theme="soviet"] .bar{
+  background:rgba(26,26,26,.13);
+  box-shadow:none;border:1px solid rgba(26,26,26,.30);}
+[data-theme="soviet"] .bar>div{box-shadow:none;}
+[data-theme="soviet"] .memstack{
+  background:rgba(26,26,26,.11);
+  box-shadow:none;border:1px solid rgba(26,26,26,.28);}
+[data-theme="soviet"] .memstack .f{background:#1a1a1a;}
+[data-theme="soviet"] .memstack .u{color:#efe9dd;}
+[data-theme="soviet"] .kpi .lbl s,
+[data-theme="soviet"] .tag{
+  border:2px solid #1a1a1a;border-radius:0;
+  background:transparent;color:#1a1a1a;
+  box-shadow:none;padding:1px 6px;font-weight:700;text-transform:uppercase;}
+[data-theme="soviet"] .kpi .val{font-weight:900;letter-spacing:-.03em;}
+[data-theme="soviet"] th{
+  border-bottom:2px solid #1a1a1a;
+  background:#1a1a1a;color:#efe9dd;
+  text-transform:uppercase;letter-spacing:.08em;}
+[data-theme="soviet"] .stat{color:#4a453c;}
+[data-theme="soviet"] .seg{border:2px solid #1a1a1a;}
+[data-theme="soviet"] .seg button.on{
+  background:var(--accent);color:#efe9dd;box-shadow:none;}
+[data-theme="soviet"] .events{background:rgba(236,231,220,.92);border:1px solid rgba(26,26,26,.24);}
+[data-theme="soviet"] .events .lv.ALERT,[data-theme="soviet"] .notice .k{
+  background:#d32027;color:#efe9dd;font-weight:700;text-transform:uppercase;}
+[data-theme="soviet"] .kpi.alarm{box-shadow:0 0 0 2px var(--accent),4px 4px 0 rgba(26,26,26,.20);}
+[data-theme="soviet"] .sidefoot{color:#8d867a;text-transform:uppercase;letter-spacing:.08em;}
+[data-theme="soviet"]::-webkit-scrollbar-track{background:rgba(26,26,26,.08);}
+[data-theme="soviet"] ::-webkit-scrollbar-thumb{background:#1a1a1a;border:2px solid transparent;}
+/* 粗黑体做 UI 字，数字必须压回等宽，否则读数会跳 */
+[data-theme="soviet"] .kpi .val,[data-theme="soviet"] .temp .num,
+[data-theme="soviet"] td.mono,[data-theme="soviet"] #clock,
+[data-theme="soviet"] .meter .row b,[data-theme="soviet"] .core .v,
+[data-theme="soviet"] .hostline b,[data-theme="soviet"] .kv>div:nth-child(even){
+  font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;}
+/* 粗黑体本身就很"宽"，标题再放大一档会撑爆，所以标题略微收紧行距 */
+[data-theme="soviet"] .panel>.hd h3{line-height:1.15;}
+[data-theme="soviet"] .kpi .lbl,
+[data-theme="soviet"] .stat{letter-spacing:.02em;}
+/* "棱角分明"的排版手法：全大写 + 极紧的负字距 + 900 字重，
+   粗黑体挤在一起才有海报上那种"硬块压过来"的感觉。 */
+[data-theme="soviet"] .panel>.hd h3,
+[data-theme="soviet"] .kpi .lbl,
+[data-theme="soviet"] .kv .k,
+[data-theme="soviet"] .meter .row span,
+[data-theme="soviet"] .temp .lbl{
+  text-transform:uppercase;font-weight:900;letter-spacing:-.01em;}
+[data-theme="soviet"] .brand b{font-weight:900;letter-spacing:-.01em;}
+
+/* ============================================================
+   赛博朋克 —— 霓虹
+   深蓝紫的夜 + 青 / 品红霓虹灯。锋利直角、扫描线、
+   发光边框、故障绿。参照 synthwave 和赛博朋克 2077。
+   ============================================================ */
+[data-theme="cyber"]{
+  /* 背景：四团霓虹灯牌的光雾（品红/青/紫/黄）+ 远景电路网格 + 深蓝紫渐变。
+     灯牌是错落的，所以光晕的位置故意不对称。 */
+  /* 背景：六团霓虹光雾（品红/青/紫/黄/绿/橙）+ 一条城市天际线 + 透视地平线。
+     之前那两层方格删了——太密、太规整，像Excel 底纹，一眼就"土"。
+     现在换成远近两层建筑剪影 + 向远处收拢的透视线，颜色也铺得更开。 */
+  --bg:radial-gradient(66% 52% at 84% -8%,rgba(255,45,149,.52) 0%,rgba(255,45,149,0) 58%) no-repeat,
+       radial-gradient(58% 48% at 4% 106%,rgba(0,229,255,.46) 0%,rgba(0,229,255,0) 60%) no-repeat,
+       radial-gradient(44% 36% at 62% 96%,rgba(181,55,255,.42) 0%,rgba(181,55,255,0) 62%) no-repeat,
+       radial-gradient(34% 30% at 14% 4%,rgba(255,214,0,.28) 0%,rgba(255,214,0,0) 60%) no-repeat,
+       radial-gradient(30% 34% at 96% 46%,rgba(61,255,160,.26) 0%,rgba(61,255,160,0) 62%) no-repeat,
+       radial-gradient(28% 26% at 40% 16%,rgba(255,122,61,.24) 0%,rgba(255,122,61,0) 64%) no-repeat,
+       radial-gradient(24% 30% at 74% 66%,rgba(0,140,255,.28) 0%,rgba(0,140,255,0) 64%) no-repeat,
+       /* 天际线：两层建筑剪影，近层高、远层矮，中间夹一道地平线辉光 */
+       linear-gradient(90deg,transparent 0 6%,rgba(12,4,32,.85) 6% 13%,transparent 13% 17%,
+                       rgba(12,4,32,.85) 17% 21%,transparent 21% 27%,rgba(12,4,32,.7) 27% 36%,
+                       transparent 36% 40%,rgba(12,4,32,.85) 40% 47%,transparent 47% 53%,
+                       rgba(12,4,32,.7) 53% 61%,transparent 61% 66%,rgba(12,4,32,.85) 66% 74%,
+                       transparent 74% 79%,rgba(12,4,32,.7) 79% 88%,transparent 88% 100%) bottom/100% 34% no-repeat,
+       linear-gradient(90deg,rgba(20,8,48,.55) 0 4%,transparent 4% 9%,rgba(20,8,48,.55) 9% 15%,
+                       transparent 15% 22%,rgba(20,8,48,.45) 22% 30%,transparent 30% 35%,
+                       rgba(20,8,48,.55) 35% 43%,transparent 43% 50%,rgba(20,8,48,.45) 50% 59%,
+                       transparent 59% 64%,rgba(20,8,48,.55) 64% 72%,transparent 72% 78%,
+                       rgba(20,8,48,.45) 78% 86%,transparent 86% 100%) bottom/100% 21% no-repeat,
+       /* 地平线：一条横向的青色辉光，把天和地分开 */
+       linear-gradient(0deg,rgba(0,229,255,.20) 0%,rgba(0,229,255,0) 16%) no-repeat,
+       linear-gradient(160deg,#05010d 0%,#140a34 42%,#08031a 74%,#100430 100%);
+  /* 面板压得比之前透一点，让底下的天际线和霓虹能透上来——这是这套的命根子 */
+  --panel:rgba(16,8,38,.78);
+  --panel2:rgba(28,14,58,.86);
+  --panel3:rgba(42,24,80,.95);
+  --line:rgba(0,229,255,.22);
+  --line2:rgba(0,229,255,.38);
+  --line3:rgba(0,229,255,.62);
+  --txt:#e2f9ff;
+  --fg:#8ffbff;
+  --fg-inv:#05010c;
+  --dim:#93aada;
+  --dim2:#6478a6;
+  --dim3:#41507a;
+  /* 形：赛博朋克要"方头、宽字面、机械感"。Bahnschrift 是 Windows 自带的
+     工业风无衬线，方正的调子正合适。 */
+  --mono:"Bahnschrift","Arial Narrow",Arial,sans-serif;
+  --well:rgba(8,3,20,.7);
+  --well2:rgba(22,12,46,.7);
+  --well3:rgba(30,18,60,.6);
+  --thumb:#2f4374;
+  --thumb-h:#4568b0;
+  --grid-h:rgba(0,229,255,.20);
+  --grid-v:rgba(0,229,255,.11);
+  --axis:#6d90c4;
+  --accent:#00e5ff;
+  --accent2:#ff2d95;
+  --accentbg:rgba(0,229,255,.14);
+  --radius:0px;
+  --bar-radius:0px;
+  --seg-radius:0px;
+  --tag-radius:0px;
+  --panel-img:linear-gradient(180deg,rgba(0,229,255,.07) 0%,rgba(0,229,255,0) 34%);
+  --panel-img-size:100% 46%;
+  --bevel:inset 0 0 0 1px rgba(0,229,255,.26),
+          inset 0 0 26px rgba(0,229,255,.07);
+  --lift:0 0 0 transparent;
+  --btn-img:none;
+  --bar-img:linear-gradient(90deg,#00e5ff 0%,#00f0ff 44%,#b537ff 100%);
+  --bar-gloss:rgba(255,255,255,.55);
+  --bar-inset:rgba(0,229,255,.22);
+  --scanline:rgba(0,229,255,.06);
+  --pulse-a:rgba(0,229,255,.55);
+  --pulse-b:rgba(0,229,255,0);
+  --chart-cap:square;
+  --chart-fill-op:.12;
+}
+/* 霓虹灯牌：三层发光——紧贴边框的硬边、外扩的光晕、外侧更散的辉光 */
+[data-theme="cyber"] .panel{
+  border:1px solid rgba(0,229,255,.55);
+  box-shadow:0 0 0 1px rgba(0,229,255,.22),0 0 9px rgba(0,229,255,.45),
+    0 0 26px rgba(0,229,255,.22),inset 0 0 24px rgba(0,229,255,.08);}
+[data-theme="cyber"] .panel>.hd{
+  background:linear-gradient(180deg,rgba(0,229,255,.16),rgba(0,229,255,.03));
+  border-bottom:1px solid rgba(0,229,255,.42);
+  box-shadow:inset 0 -1px 8px rgba(0,229,255,.12);}
+/* 面板标题做成霓虹灯管字 */
+[data-theme="cyber"] .panel>.hd h3{
+  color:#c9fdff;
+  text-shadow:0 0 4px rgba(0,229,255,.9),0 0 12px rgba(0,229,255,.55);}
+[data-theme="cyber"] .bar-top,[data-theme="cyber"] .bar-top{background:rgba(10,4,26,.92);
+  box-shadow:inset 0 -1px 0 rgba(0,229,255,.42),0 0 22px rgba(0,229,255,.12);}
+[data-theme="cyber"] .side{background:rgba(13,6,32,.82);border-right:1px solid rgba(0,229,255,.26);}
+[data-theme="cyber"] .statusbar{background:rgba(10,4,26,.92);
+  box-shadow:inset 0 1px 0 rgba(0,229,255,.36);}
+[data-theme="cyber"] .navitem.on{
+  background:linear-gradient(180deg,rgba(0,229,255,.30),rgba(0,229,255,.06));
+  color:#d6feff;
+  box-shadow:inset 0 -2px 0 var(--accent),inset 0 0 18px rgba(0,229,255,.22),
+    0 0 12px rgba(0,229,255,.25);
+  text-shadow:0 0 8px rgba(0,229,255,.85);}
+[data-theme="cyber"] .navitem:hover{background:rgba(0,229,255,.09);color:#c2f8ff;}
+[data-theme="cyber"] .navitem.on{
+  background:linear-gradient(90deg,rgba(0,229,255,.20),rgba(0,229,255,0));
+  box-shadow:inset 2px 0 0 var(--accent),inset 0 0 16px rgba(0,229,255,.12);
+  text-shadow:0 0 7px rgba(0,229,255,.7);}
+[data-theme="cyber"] .brand b{text-shadow:0 0 8px rgba(0,229,255,.7);}
+[data-theme="cyber"] .brand .mark{border-color:rgba(0,229,255,.7);
+  box-shadow:0 0 8px rgba(0,229,255,.5);}
+[data-theme="cyber"] .brand .mark::after{background:var(--accent);
+  box-shadow:0 0 12px rgba(0,229,255,1);}
+[data-theme="cyber"] .dot{background:var(--accent);
+  box-shadow:0 0 9px rgba(0,229,255,.9);}
+/* 数字和时钟发出霓虹光 */
+[data-theme="cyber"] .kpi .val,[data-theme="cyber"] #clock,
+[data-theme="cyber"] .core .v,[data-theme="cyber"] .meter .row b,
+[data-theme="cyber"] .temp .num{
+  text-shadow:0 0 8px rgba(0,229,255,.55);}
+[data-theme="cyber"] .bar{background:rgba(0,229,255,.08);
+  box-shadow:inset 0 0 6px rgba(0,229,255,.22);}
+[data-theme="cyber"] .bar>div{box-shadow:0 0 9px rgba(0,229,255,.65);}
+[data-theme="cyber"] .memstack{
+  background:rgba(0,229,255,.06);box-shadow:inset 0 0 6px rgba(0,229,255,.18);}
+[data-theme="cyber"] .memstack .f{background:rgba(0,229,255,.08);color:#7db8ff;}
+[data-theme="cyber"] .seg{box-shadow:inset 0 0 6px rgba(0,229,255,.18);}
+[data-theme="cyber"] .seg button.on{background:var(--accent);color:#05010c;
+  box-shadow:0 0 12px rgba(0,229,255,.5);}
+[data-theme="cyber"] .events .lv.ALERT,[data-theme="cyber"] .notice .k{
+  background:rgba(255,45,149,.22);color:#ffb3dd;
+  box-shadow:inset 0 0 0 1px rgba(255,45,149,.55),0 0 10px rgba(255,45,149,.28);}
+[data-theme="cyber"] .kpi.alarm{box-shadow:0 0 0 2px rgba(255,45,149,.55),0 0 16px rgba(255,45,149,.3);}
+[data-theme="cyber"] ::-webkit-scrollbar-track{background:rgba(8,4,18,.6);}
+[data-theme="cyber"] ::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#1e3a66,#2a4a8c);
+  border:2px solid rgba(8,4,18,.6);}
+
+/* ============================================================
+   NASA —— 深空
+   参照宇宙深空 + 阿波罗时代飞行器遥测面板：深蓝黑的星空底、
+   星云光晕、点点星光，面板是浮在星空上的深色舷窗，顶上一道
+   橙红识别条。数字带一点点冷光，像舱内仪表。
+   ============================================================ */
+[data-theme="nasa"]{
+  /* 背景：极暗的星云余晖（青蓝 + 紫，压得很低，只当"远处有点东西"）+ 散落的星点 + 近黑深空渐变。
+     这里刻意不出彩、不抢戏——深空本来就是黑的，星云只是若有若无的底味。 */
+  --bg:radial-gradient(58% 46% at 78% 10%,rgba(38,72,150,.20) 0%,rgba(38,72,150,0) 62%),
+       radial-gradient(50% 44% at 12% 88%,rgba(88,44,150,.16) 0%,rgba(88,44,150,0) 64%),
+       radial-gradient(36% 30% at 54% 44%,rgba(22,54,118,.16) 0%,rgba(22,54,118,0) 62%),
+       radial-gradient(1.2px 1.2px at 3% 8%,rgba(255,255,255,.62) 0,transparent 1.9px),
+       radial-gradient(1px 1px at 11% 22%,rgba(255,255,255,.52) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 18% 6%,rgba(255,255,255,.58) 0,transparent 1.7px),
+       radial-gradient(1.8px 1.8px at 27% 14%,rgba(210,226,250,.66) 0,transparent 2.5px),
+       radial-gradient(1px 1px at 34% 30%,rgba(255,255,255,.5) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 41% 9%,rgba(255,255,255,.62) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 49% 18%,rgba(255,255,255,.46) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 55% 6%,rgba(255,255,255,.58) 0,transparent 1.7px),
+       radial-gradient(1.8px 1.8px at 62% 24%,rgba(210,226,250,.66) 0,transparent 2.5px),
+       radial-gradient(1px 1px at 70% 12%,rgba(255,255,255,.52) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 77% 30%,rgba(255,255,255,.46) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 84% 8%,rgba(255,255,255,.62) 0,transparent 1.7px),
+       radial-gradient(1.8px 1.8px at 90% 20%,rgba(210,226,250,.66) 0,transparent 2.5px),
+       radial-gradient(1px 1px at 95% 15%,rgba(255,255,255,.52) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 7% 45%,rgba(255,255,255,.5) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 15% 55%,rgba(255,255,255,.55) 0,transparent 1.7px),
+       radial-gradient(1.8px 1.8px at 24% 68%,rgba(210,226,250,.66) 0,transparent 2.5px),
+       radial-gradient(1px 1px at 33% 82%,rgba(255,255,255,.46) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 45% 74%,rgba(255,255,255,.52) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 58% 66%,rgba(255,255,255,.5) 0,transparent 1.7px),
+       radial-gradient(1.8px 1.8px at 68% 78%,rgba(210,226,250,.6) 0,transparent 2.5px),
+       radial-gradient(1px 1px at 79% 60%,rgba(255,255,255,.52) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 88% 72%,rgba(255,255,255,.46) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 97% 52%,rgba(255,255,255,.55) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 6% 34%,rgba(255,255,255,.5) 0,transparent 1.7px),
+       radial-gradient(1.4px 1.4px at 14% 38%,rgba(210,226,250,.6) 0,transparent 2.2px),
+       radial-gradient(1px 1px at 22% 48%,rgba(255,255,255,.46) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 30% 40%,rgba(255,255,255,.52) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 38% 52%,rgba(255,255,255,.44) 0,transparent 1.7px),
+       radial-gradient(1.4px 1.4px at 46% 38%,rgba(210,226,250,.58) 0,transparent 2.2px),
+       radial-gradient(1px 1px at 54% 48%,rgba(255,255,255,.5) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 61% 40%,rgba(255,255,255,.44) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 69% 52%,rgba(255,255,255,.52) 0,transparent 1.7px),
+       radial-gradient(1.4px 1.4px at 78% 44%,rgba(210,226,250,.6) 0,transparent 2.2px),
+       radial-gradient(1px 1px at 86% 52%,rgba(255,255,255,.46) 0,transparent 1.7px),
+       radial-gradient(1px 1px at 93% 40%,rgba(255,255,255,.52) 0,transparent 1.7px),
+       linear-gradient(180deg,#020306 0%,#04060c 46%,#06080f 100%);
+  --panel:rgba(10,13,20,.72);
+  --panel2:rgba(15,19,28,.8);
+  --panel3:rgba(22,27,38,.9);
+  --line:rgba(150,170,200,.10);
+  --line2:rgba(160,185,220,.20);
+  --line3:rgba(180,205,240,.34);
+  --txt:#dbe6f5;
+  --fg:#eaf3ff;
+  --fg-inv:#05070d;
+  --dim:#8fa3c4;
+  --dim2:#64789a;
+  --dim3:#46587a;
+  /* 字形：航天遥测面板用"窄体工程字"——瘦高、省地方、像刻在金属上。
+     Bahnschrift Semilight 比默认粗细更细，配宽字距更"仪表盘"。 */
+  --mono:"Bahnschrift SemiCondensed","Segoe UI","Arial Narrow",Arial,sans-serif;
+  --well:rgba(7,10,15,.8);
+  --well2:rgba(12,16,23,.8);
+  --well3:rgba(18,23,32,.72);
+  --thumb:#4a5570;
+  --thumb-h:#6b7898;
+  --grid-h:rgba(150,170,200,.11);
+  --grid-v:rgba(150,170,200,.06);
+  --axis:#7d8ba4;
+  --accent:#fc3d21;   /* NASA 橙红 */
+  --accent2:#ff8a3d;  /* 琥珀 */
+  --accentbg:rgba(252,61,33,.13);
+  --radius:2px;
+  --bar-radius:1px;
+  --seg-radius:2px;
+  --tag-radius:2px;
+  /* 金属面板：横向细纹拉丝 + 极轻的顶光，像舱壁上铣出来的一块板 */
+  --panel-img:repeating-linear-gradient(90deg,rgba(255,255,255,.022) 0 1px,rgba(255,255,255,0) 1px 3px),
+              linear-gradient(180deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,0) 42%);
+  --panel-img-size:100% 100%;
+  --bevel:inset 0 1px 0 rgba(255,255,255,.11),
+          inset 0 -1px 0 rgba(0,0,0,.5),
+          inset 0 0 0 1px rgba(150,175,210,.10);
+  --lift:0 2px 12px rgba(0,0,0,.6);
+  --btn-img:none;
+  --bar-img:linear-gradient(180deg,#ffb36b 0%,#ff8a3d 55%,#fc3d21 100%);
+  --bar-gloss:rgba(255,255,255,.28);
+  --bar-inset:rgba(0,0,0,.4);
+  --scanline:transparent;
+  --pulse-a:rgba(252,61,33,.45);
+  --pulse-b:rgba(252,61,33,0);
+  --chart-cap:butt;
+  --chart-fill-op:.12;
+}
+/* 面板顶部一道橙红识别条：飞行器遥测面板的识别标，星空底上唯一的一抹暖色 */
+[data-theme="nasa"] .panel,[data-theme="nasa"] .side,
+[data-theme="nasa"] .bar-top,[data-theme="nasa"] .bar-top,[data-theme="nasa"] .statusbar{
+  backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);}
+[data-theme="nasa"] .main{background:transparent;}
+[data-theme="nasa"] .panel{border:1px solid var(--line2);}
+[data-theme="nasa"] .panel>.hd{
+  background:linear-gradient(180deg,rgba(150,175,210,.09),rgba(150,175,210,.01));
+  border-bottom:1px solid var(--line2);
+  box-shadow:inset 0 3px 0 var(--accent);}
+[data-theme="nasa"] .bar-top,[data-theme="nasa"] .bar-top{background:rgba(6,8,13,.86);
+  box-shadow:inset 0 -1px 0 rgba(150,175,210,.18);}
+[data-theme="nasa"] .side{background:rgba(6,8,13,.78);border-right:1px solid rgba(150,175,210,.13);}
+[data-theme="nasa"] .statusbar{background:rgba(6,8,13,.86);
+  box-shadow:inset 0 1px 0 rgba(150,175,210,.18);}
+[data-theme="nasa"] .navitem.on{
+  background:linear-gradient(180deg,rgba(252,61,33,.16),rgba(252,61,33,.03));
+  box-shadow:inset 0 -3px 0 var(--accent);}
+[data-theme="nasa"] .navitem.on{
+  background:linear-gradient(90deg,rgba(252,61,33,.11),rgba(252,61,33,0));
+  border-left-color:var(--accent);}
+[data-theme="nasa"] .brand .mark::after{background:var(--accent);
+  box-shadow:0 0 6px rgba(252,61,33,.4);}
+[data-theme="nasa"] .dot{background:var(--accent);
+  box-shadow:0 0 5px rgba(252,61,33,.35);}
+/* 数字带一点点冷光，像舱内仪表——很淡，别做成霓虹 */
+[data-theme="nasa"] .kpi .val,[data-theme="nasa"] #clock,
+[data-theme="nasa"] .core .v,[data-theme="nasa"] .meter .row b,
+[data-theme="nasa"] .temp .num{
+  text-shadow:0 0 6px rgba(150,200,255,.22);}
+[data-theme="nasa"] .bar{background:rgba(150,175,210,.09);
+  box-shadow:inset 0 0 6px rgba(0,0,0,.6);}
+[data-theme="nasa"] .bar>div{box-shadow:inset 0 1px 0 rgba(255,255,255,.22);}
+[data-theme="nasa"] .memstack{box-shadow:inset 0 1px 2px rgba(0,0,0,.5);}
+[data-theme="nasa"] .memstack .f{background:rgba(150,175,210,.08);}
+[data-theme="nasa"] .seg{box-shadow:inset 0 1px 2px rgba(0,0,0,.5);}
+[data-theme="nasa"] .seg button.on{background:var(--accent);color:#fff;}
+[data-theme="nasa"] .events{background:rgba(8,11,17,.78);}
+[data-theme="nasa"] .events .lv.ALERT,[data-theme="nasa"] .notice .k{
+  background:var(--accent);color:#fff;}
+[data-theme="nasa"] .kpi.alarm{box-shadow:0 0 0 1px var(--accent),0 0 9px rgba(252,61,33,.22);}
+[data-theme="nasa"] ::-webkit-scrollbar-track{background:rgba(6,8,13,.8);}
+[data-theme="nasa"] ::-webkit-scrollbar-thumb{background:#39435c;border:2px solid rgba(6,8,13,.8);}
+
+/* ============================================================
+   Hacker
+   素材来自千禧年前后（90 末 - 00 初）互联网对黑客的想象：
+   夜视绿 CRT 终端、母体代码雨、扫描线、磷光余辉。
+   主色只有一味荧光绿，其余全是黑——不是"深绿配色"，
+   是"黑底上一根发光的绿线"。背景那层会持续往下滚的乱码，
+   挂在 body::before 上，和主题无关，一切走 CSS 动画。
+   ============================================================ */
+[data-theme="hacker"]{
+  --bg:#000600;
+  --panel:rgba(0,14,4,.82);
+  --panel2:rgba(0,22,7,.80);
+  --panel3:rgba(0,30,10,.92);
+  --line:rgba(0,255,102,.14);
+  --line2:rgba(0,255,102,.26);
+  --line3:rgba(0,255,102,.44);
+  --txt:#00ff66;
+  --fg:#7dffab;
+  --fg-inv:#001a06;
+  --dim:#22b455;
+  --dim2:#137a3a;
+  --dim3:#0a4a24;
+  /* 字形：终端机就是等宽点阵，Cascadia 是微软自带的开发者等宽体 */
+  --mono:"Cascadia Mono","Consolas","Courier New",ui-monospace,monospace;
+  --well:#000a02;
+  --well2:#001206;
+  --well3:#00190a;
+  --thumb:#0a5326;
+  --thumb-h:#12a04c;
+  --grid-h:rgba(0,255,102,.10);
+  --grid-v:rgba(0,255,102,.055);
+  --axis:#137a3a;
+  --accent:#00ff66;
+  --accent2:#12a04c;
+  --accentbg:rgba(0,255,102,.13);
+  --radius:0px;
+  --bar-radius:0px;
+  --seg-radius:0px;
+  --tag-radius:0px;
+  --panel-img:repeating-linear-gradient(0deg,rgba(0,255,102,.05) 0 1px,rgba(0,0,0,0) 1px 3px);
+  --panel-img-size:100% 100%;
+  --bevel:inset 0 0 0 1px rgba(0,255,102,.20),inset 0 0 26px rgba(0,255,102,.05);
+  --lift:0 0 14px rgba(0,255,102,.10);
+  --btn-img:none;
+  --bar-img:linear-gradient(90deg,#0a5326 0%,#00ff66 100%);
+  --bar-gloss:rgba(255,255,255,.30);
+  --bar-inset:rgba(0,0,0,.65);
+  --scanline:rgba(0,0,0,.28);
+  --pulse-a:rgba(0,255,102,.85);
+  --pulse-b:rgba(0,255,102,0);
+  --chart-cap:square;
+  --chart-fill-op:.11;
+}
+/* 乱码雨：真正在滚的字符，由 JS 画在一块 fixed 全屏 canvas 上（见 rainInit）。
+   纯 CSS 做不到这个——用渐变 + 竖条遮罩只会得到一列列色块，不是字。
+   它压在整屏最上层（z-index:9），但透明度压得很低、且不接收鼠标事件，
+   所以读起来是"背景在动"，不会挡着看面板。放在内容下面反而会被
+   body 的不透明底色糊掉，这正是第一版没效果的原因。 */
+#rain{position:fixed;inset:0;z-index:9;pointer-events:none;display:none;
+  opacity:.55;mix-blend-mode:screen;}
+[data-theme="hacker"] #rain{display:block;}
+/* 扫描线：CRT 的横向细纹，压在最上层 */
+[data-theme="hacker"] .app::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:10;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.20) 0 1px,rgba(0,0,0,0) 1px 3px);
+}
+[data-theme="hacker"] .panel,
+[data-theme="hacker"] .side,
+[data-theme="hacker"] .bar-top,
+[data-theme="hacker"] .bar-top,
+[data-theme="hacker"] .statusbar{backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+[data-theme="hacker"] .main{background:transparent;}
+[data-theme="hacker"] .bar-top,[data-theme="hacker"] .bar-top{background:rgba(0,10,3,.90);
+  box-shadow:inset 0 -1px 0 var(--line3),0 0 18px rgba(0,255,102,.10);}
+[data-theme="hacker"] .side{background:rgba(0,10,3,.86);border-right:1px solid var(--line2);}
+[data-theme="hacker"] .statusbar{background:rgba(0,10,3,.90);
+  box-shadow:inset 0 1px 0 var(--line2);}
+[data-theme="hacker"] .brand b{text-shadow:0 0 7px rgba(0,255,102,.75);}
+[data-theme="hacker"] .brand span{color:var(--dim2);}
+[data-theme="hacker"] .brand .mark{border-color:var(--accent);
+  box-shadow:0 0 8px rgba(0,255,102,.5);}
+[data-theme="hacker"] .brand .mark::after{background:var(--accent);}
+[data-theme="hacker"] .dot{background:var(--accent);box-shadow:0 0 7px rgba(0,255,102,.9);}
+[data-theme="hacker"] .navitem.on{background:rgba(0,255,102,.14);color:var(--fg);
+  box-shadow:inset 0 -2px 0 var(--accent),0 0 12px rgba(0,255,102,.22);}
+[data-theme="hacker"] .navitem{color:var(--dim);}
+[data-theme="hacker"] .navitem em{color:var(--dim3);}
+[data-theme="hacker"] .navitem.on{color:var(--fg);background:rgba(0,255,102,.10);
+  border-left-color:var(--accent);text-shadow:0 0 6px rgba(0,255,102,.5);}
+[data-theme="hacker"] .panel>.hd{background:rgba(0,255,102,.09);
+  border-bottom:1px solid var(--line2);}
+[data-theme="hacker"] .panel>.hd h3{color:var(--fg);text-shadow:0 0 6px rgba(0,255,102,.55);}
+[data-theme="hacker"] .panel>.hd .meta{color:var(--dim2);}
+[data-theme="hacker"] .kpi .val,[data-theme="hacker"] #clock,
+[data-theme="hacker"] .core .v,[data-theme="hacker"] .meter .row b,
+[data-theme="hacker"] .temp .num{text-shadow:0 0 7px rgba(0,255,102,.5);}
+[data-theme="hacker"] .bar{background:rgba(0,255,102,.08);}
+[data-theme="hacker"] .bar>div{box-shadow:0 0 9px rgba(0,255,102,.75),inset 0 1px 0 rgba(255,255,255,.28);}
+[data-theme="hacker"] .memstack{box-shadow:inset 0 1px 3px rgba(0,0,0,.8);}
+[data-theme="hacker"] .memstack .f{background:rgba(0,255,102,.10);color:var(--dim2);}
+[data-theme="hacker"] .seg{box-shadow:inset 0 0 6px rgba(0,255,102,.18);}
+[data-theme="hacker"] .seg button.on{background:var(--accent);color:var(--fg-inv);
+  box-shadow:0 0 12px rgba(0,255,102,.5);}
+[data-theme="hacker"] .events{background:rgba(0,8,2,.80);}
+[data-theme="hacker"] .events .lv.ALERT,[data-theme="hacker"] .notice .k{
+  background:var(--accent);color:var(--fg-inv);}
+[data-theme="hacker"] .kpi.alarm{box-shadow:0 0 0 1px var(--accent),0 0 18px rgba(0,255,102,.34);}
+[data-theme="hacker"] .stat,[data-theme="hacker"] .statusbar{color:var(--dim2);}
+[data-theme="hacker"] ::-webkit-scrollbar-track{background:rgba(0,8,2,.8);}
+[data-theme="hacker"] ::-webkit-scrollbar-thumb{background:#0a5326;border:2px solid rgba(0,8,2,.8);}
+[data-theme="hacker"] .kpi .val,[data-theme="hacker"] .temp .num,
+[data-theme="hacker"] td.mono,[data-theme="hacker"] #clock,
+[data-theme="hacker"] .meter .row b,[data-theme="hacker"] .core .v,
+[data-theme="hacker"] .hostline b,[data-theme="hacker"] .kv>div:nth-child(even){
+  font-family:ui-monospace,"Cascadia Mono","Consolas","Courier New",monospace;
+  font-variant-numeric:tabular-nums;}
+
+/* ============================================================
+   Ink
+   国风：宣纸 + 水墨 + 低饱和。
+   底子不是"白"，是生宣那种带灰黄的暖白；墨色也不纯黑，
+   是掺了青的松烟墨；再点一枚朱砂印。留白比装饰重要，
+   所以圆角近乎直角、线条极细、字号不用粗体压。
+   ============================================================ */
+[data-theme="ink"]{
+  --bg:radial-gradient(70% 50% at 88% 6%,rgba(70,86,110,.055) 0%,rgba(70,86,110,0) 62%) no-repeat,
+       radial-gradient(60% 44% at 6% 92%,rgba(120,110,84,.050) 0%,rgba(120,110,84,0) 60%) no-repeat,
+       radial-gradient(90% 70% at 50% 50%,rgba(0,0,0,0) 40%,rgba(92,80,58,.070) 100%) no-repeat,
+       repeating-linear-gradient(0deg,rgba(90,78,56,.016) 0 1px,rgba(0,0,0,0) 1px 4px),
+       linear-gradient(180deg,#f8f5ec 0%,#f4efe2 52%,#ece5d4 100%);
+  --panel:rgba(253,251,245,.86);
+  --panel2:rgba(248,244,234,.90);
+  --panel3:rgba(253,251,245,.96);
+  --line:rgba(74,80,74,.14);
+  --line2:rgba(74,80,74,.24);
+  --line3:rgba(58,62,58,.42);
+  --txt:#3a3d38;
+  --fg:#23261f;
+  --fg-inv:#f8f5ec;
+  --dim:#5f6358;
+  --dim2:#83877a;
+  --dim3:#a8aa9c;
+  /* 字形：国风要"手写体的笔锋"。中文楷体（起笔顿挫、收笔出锋），
+     西文配衬线体，跟宣纸墨迹的气质最贴。 */
+  --mono:"STKaiti","KaiTi","STSong","SimSun","Georgia",serif;
+  --well:#f2eee3;
+  --well2:#eae5d7;
+  --well3:#e3ddcb;
+  --thumb:#c9c3b1;
+  --thumb-h:#a49c86;
+  --grid-h:rgba(74,80,74,.13);
+  --grid-v:rgba(74,80,74,.07);
+  --axis:#8e9184;
+  --accent:#4a5450;
+  --accent2:#7d857a;
+  --accentbg:rgba(74,84,80,.10);
+  --radius:1px;
+  --bar-radius:0px;
+  --seg-radius:1px;
+  --tag-radius:1px;
+  --panel-img:none;
+  --panel-img-size:100% 46%;
+  --bevel:inset 0 0 0 1px rgba(74,80,74,.16);
+  --lift:0 1px 2px rgba(80,70,50,.06);
+  --btn-img:none;
+  --bar-img:linear-gradient(90deg,#8d9488 0%,#3a3d38 100%);
+  --bar-gloss:transparent;
+  --bar-inset:rgba(0,0,0,.10);
+  --scanline:rgba(255,255,255,0);
+  --pulse-a:rgba(58,61,56,.55);
+  --pulse-b:rgba(58,61,56,0);
+  --chart-cap:round;
+  --chart-fill-op:.10;
+}
+[data-theme="ink"] .panel,
+[data-theme="ink"] .side,
+[data-theme="ink"] .bar-top,
+[data-theme="ink"] .bar-top,
+[data-theme="ink"] .statusbar{backdrop-filter:blur(4px) saturate(104%);-webkit-backdrop-filter:blur(4px) saturate(104%);}
+[data-theme="ink"] .main{background:transparent;}
+[data-theme="ink"] .bar-top,[data-theme="ink"] .bar-top{background:rgba(250,247,240,.90);
+  box-shadow:inset 0 -1px 0 rgba(58,62,58,.30);}
+[data-theme="ink"] .side{background:rgba(246,242,232,.82);border-right:1px solid rgba(74,80,74,.16);}
+[data-theme="ink"] .statusbar{background:rgba(250,247,240,.90);}
+/* 朱砂只做"印"，不做主色——只在品牌标记和告警上点一笔 */
+[data-theme="ink"] .brand .mark{border-color:#a8372c;transform:rotate(45deg);
+  box-shadow:none;background:rgba(168,55,44,.10);}
+[data-theme="ink"] .brand .mark::after{background:#a8372c;border-radius:0;}
+[data-theme="ink"] .brand b{letter-spacing:.20em;font-weight:400;}
+[data-theme="ink"] .dot{background:#a8372c;box-shadow:none;border-radius:0;}
+[data-theme="ink"] .navitem.on{background:rgba(74,84,80,.10);color:var(--fg);
+  box-shadow:inset 0 -1px 0 var(--fg);}
+[data-theme="ink"] .navitem{color:var(--dim);letter-spacing:.10em;}
+[data-theme="ink"] .navitem.on{color:var(--fg);background:rgba(74,84,80,.08);
+  border-left-color:#a8372c;}
+[data-theme="ink"] .panel{border:1px solid rgba(74,80,74,.20);}
+/* 卷轴：面板头压一道淡墨，像画心的天头 */
+[data-theme="ink"] .panel>.hd{background:rgba(74,80,74,.045);
+  border-bottom:1px solid rgba(74,80,74,.20);}
+[data-theme="ink"] .panel>.hd h3{font-weight:400;letter-spacing:.16em;color:var(--fg);}
+[data-theme="ink"] .panel>.hd .meta{color:var(--dim2);}
+[data-theme="ink"] th{background:rgba(74,80,74,.06);color:var(--dim);
+  letter-spacing:.12em;font-weight:400;border-bottom:1px solid rgba(74,80,74,.24);}
+[data-theme="ink"] .bar{background:rgba(74,80,74,.10);}
+[data-theme="ink"] .bar>div{box-shadow:none;}
+[data-theme="ink"] .memstack{border:1px solid rgba(74,80,74,.24);}
+[data-theme="ink"] .memstack .u{background:#3a3d38;}
+[data-theme="ink"] .memstack .f{background:#e3ddcb;color:var(--dim2);}
+[data-theme="ink"] .seg{box-shadow:none;border:1px solid rgba(74,80,74,.24);}
+[data-theme="ink"] .seg button.on{background:#3a3d38;color:#f8f5ec;}
+[data-theme="ink"] .events{background:rgba(246,242,232,.72);}
+[data-theme="ink"] .events .lv.ALERT,[data-theme="ink"] .notice .k{
+  background:#a8372c;color:#f8f5ec;}
+[data-theme="ink"] .kpi.alarm{box-shadow:inset 0 0 0 1px #a8372c;}
+[data-theme="ink"] ::-webkit-scrollbar-track{background:rgba(74,80,74,.07);}
+[data-theme="ink"] ::-webkit-scrollbar-thumb{background:#c9c3b1;border:2px solid transparent;}
+[data-theme="ink"] .kpi .val,[data-theme="ink"] .temp .num,
+[data-theme="ink"] td.mono,[data-theme="ink"] #clock,
+[data-theme="ink"] .meter .row b,[data-theme="ink"] .core .v,
+[data-theme="ink"] .hostline b,[data-theme="ink"] .kv>div:nth-child(even){
+  font-family:ui-monospace,"Cascadia Mono","Consolas","Courier New",monospace;
+  font-variant-numeric:tabular-nums;}
+
+/* ---- 首页 ----
+   一块自己排的仪表盘。卡片走网格，尺寸分三档（S/M/L）跨列跨行。
+   干净靠留白：卡片之间间距大、边框极细、不用背景色块填充。 */
+.homebar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.homehint{font-size:10px;letter-spacing:.12em;color:var(--dim3);text-transform:uppercase;}
+.homebtns{margin-left:auto;display:flex;gap:8px;}
+.hbtn{font-family:inherit;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  padding:5px 13px;cursor:pointer;background:var(--panel2);color:var(--dim2);
+  border:1px solid var(--line2);border-radius:var(--seg-radius);
+  box-shadow:var(--bevel);transition:background .14s,color .14s;}
+.hbtn:hover{background:var(--accentbg);color:var(--fg);}
+.hbtn.on{background:var(--accent);color:var(--fg-inv);}
+.homegrid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;
+  grid-auto-rows:108px;}
+/* 三档尺寸：S 占 1 列 1 行，M 占 2 列 1 行，L 占 2 列 2 行 */
+.hcard{position:relative;border:1px solid var(--line);background:var(--panel);
+  border-radius:var(--radius);box-shadow:var(--bevel);
+  padding:13px 15px;display:flex;flex-direction:column;overflow:hidden;
+  background-image:var(--panel-img);background-repeat:no-repeat;
+  background-position:top left;background-size:var(--panel-img-size);}
+.hcard.s{grid-column:span 1;}
+.hcard.m{grid-column:span 2;}
+.hcard.l{grid-column:span 3;grid-row:span 2;}
+.hcard .hlbl{font-size:9px;letter-spacing:.18em;color:var(--dim3);
+  text-transform:uppercase;display:flex;align-items:center;gap:7px;}
+.hcard .hval{margin-top:auto;font-size:27px;line-height:1.05;color:var(--fg);
+  font-variant-numeric:tabular-nums;font-family:ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;}
+/* 型号、系统名这类"长文字"读数不能按大号数字排，会溢出卡片 */
+.hcard .hval.small{font-size:12.5px;line-height:1.35;word-break:break-word;}
+.hcard.l .hval{font-size:44px;}
+.hcard .hval small{font-size:12px;color:var(--dim2);margin-left:3px;}
+.hcard .hsub{font-size:9.5px;color:var(--dim3);margin-top:6px;letter-spacing:.04em;}
+.hcard .hspark{margin-top:8px;height:26px;}
+.hcard .hspark svg{width:100%;height:100%;display:block;}
+.hcard.warn .hval{color:var(--accent);}
+/* 编辑态：卡片抖一下边框、右上角冒出删除叉，右下角是尺寸切换 */
+.homegrid.editing .hcard{border-style:dashed;cursor:grab;}
+.homegrid.editing .hcard:hover{border-color:var(--accent);}
+/* 编辑态禁止选中文字：不然按住卡片一拖，浏览器会先把卡片上的
+   文字刷成蓝色选中，拖拽等于没生效。整个网格在编辑态里都锁掉选中，
+   退出编辑态自动恢复（平时还能正常复制读数）。 */
+.homegrid.editing,.homegrid.editing *{
+  -webkit-user-select:none;-moz-user-select:none;user-select:none;}
+.homegrid.editing .hcard{cursor:grab;touch-action:none;}
+.homegrid.editing .hcard:active{cursor:grabbing;}
+.hcard .hdel{position:absolute;top:7px;right:8px;display:none;
+  width:18px;height:18px;line-height:16px;text-align:center;cursor:pointer;
+  color:var(--dim2);border:1px solid var(--line2);font-size:11px;
+  background:var(--panel3);border-radius:var(--radius);}
+.homegrid.editing .hdel{display:block;}
+.hcard .hdel:hover{color:var(--fg);border-color:var(--accent);}
+.hcard .hsize{position:absolute;bottom:8px;right:8px;display:none;
+  font-size:8.5px;letter-spacing:.1em;color:var(--dim3);cursor:pointer;
+  border:1px solid var(--line2);padding:1px 6px;background:var(--panel3);
+  border-radius:var(--tag-radius);}
+.homegrid.editing .hsize{display:block;}
+.hcard .hsize:hover{color:var(--fg);border-color:var(--accent);}
+.hcard.dragging{
+  border-style:solid;border-color:var(--accent);cursor:grabbing;
+  will-change:transform;
+  background-color:var(--panel3);
+  backdrop-filter:var(--dragfrost,none);-webkit-backdrop-filter:var(--dragfrost,none);
+  box-shadow:var(--dragsh,0 18px 42px rgba(0,0,0,.30),0 3px 10px rgba(0,0,0,.18));}
+.homegrid .hcard.hph{
+  pointer-events:none;border:1px dashed var(--line3);background:transparent;
+  background-image:none;box-shadow:none;opacity:.45;cursor:default;}
+.homeempty{padding:60px 20px;text-align:center;color:var(--dim3);font-size:12px;line-height:2.1;}
+.homeempty b{color:var(--dim);}
+/* 添加数据的浮层：跟卡片网格叠加，点选指标 */
+.pickpop{position:fixed;z-index:9998;display:none;background:var(--panel3);
+  border:1px solid var(--line3);border-radius:var(--radius);padding:0;
+  box-shadow:0 12px 34px rgba(0,0,0,.5);min-width:250px;max-width:330px;
+  backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);}
+.pickpop.open{display:block;}
+.pickhd{display:flex;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line2);
+  font-size:9.5px;letter-spacing:.16em;color:var(--dim3);text-transform:uppercase;}
+.pickhd button{margin-left:auto;font:inherit;background:none;border:0;color:var(--dim2);
+  cursor:pointer;font-size:12px;padding:0 2px;}
+.pickhd button:hover{color:var(--fg);}
+.picklist{max-height:320px;overflow:auto;padding:5px;}
+.picklist button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+  font:inherit;font-size:11px;padding:7px 9px;cursor:pointer;background:none;
+  border:0;color:var(--dim);border-radius:var(--radius);}
+.picklist button:hover{background:var(--panel2);color:var(--fg);}
+.picklist button.on{color:var(--fg);}
+.picklist button i{font-style:normal;width:12px;color:var(--accent);flex:0 0 12px;}
+.picklist button s{text-decoration:none;margin-left:auto;font-size:9px;color:var(--dim3);}
+.picklist button:disabled{opacity:.42;cursor:default;}
+.picklist button:disabled:hover{background:none;color:var(--dim);}
+/* 清单按类别分段 */
+.pickgrp{font-size:8.5px;letter-spacing:.2em;color:var(--dim3);text-transform:uppercase;
+  padding:9px 9px 4px;border-top:1px solid var(--line);}
+.pickgrp:first-child{border-top:none;padding-top:5px;}
+
+/* ---- 游戏（全屏覆盖层） ----
+   进去是纯游戏，不跟监控信息挤。Esc 退出。
+   颜色一律走 cv() 从当前主题取，所以八套皮自动适配。 */
+.gamescreen{position:fixed;inset:0;z-index:9000;display:none;
+  flex-direction:column;background:var(--bg);}
+.gamescreen.open{display:flex;}
+.gmhead{display:flex;align-items:center;gap:14px;padding:12px 18px;
+  border-bottom:1px solid var(--line2);background:var(--panel);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+.gmnav{display:flex;gap:8px;}
+.gmnav button{font-family:inherit;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  padding:6px 16px;cursor:pointer;background:var(--panel2);color:var(--dim2);
+  border:1px solid var(--line2);border-radius:var(--seg-radius);transition:background .14s,color .14s;}
+.gmnav button:hover{color:var(--fg);}
+.gmnav button.on{background:var(--accent);color:var(--fg-inv);}
+.gmrec{margin-left:auto;display:flex;gap:16px;font-size:9.5px;letter-spacing:.12em;color:var(--dim3);}
+.gmrec b{color:var(--fg);font-size:13px;font-variant-numeric:tabular-nums;
+  font-family:ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;margin-left:5px;}
+.gmclose{font-family:inherit;font-size:9.5px;letter-spacing:.14em;padding:6px 14px;cursor:pointer;
+  background:var(--panel2);color:var(--dim2);border:1px solid var(--line2);
+  border-radius:var(--seg-radius);}
+.gmclose:hover{color:var(--fg);border-color:var(--accent);}
+.gmstage{flex:1;display:flex;align-items:center;justify-content:center;padding:22px;
+  min-height:0;overflow:auto;}
+.gmslot{display:flex;flex-direction:column;align-items:center;gap:14px;}
+#snk-cv,#gmk-cv{width:min(78vh,640px);height:auto;aspect-ratio:1/1;display:block;
+  background:var(--well);border:1px solid var(--line2);border-radius:var(--radius);
+  box-shadow:var(--bevel),var(--lift);touch-action:none;}
+#snk-cv{image-rendering:pixelated;}
+.gmctl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;}
+.gplay,.gside{font-family:inherit;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;padding:6px 16px;cursor:pointer;
+  background:var(--panel2);color:var(--dim);
+  border:1px solid var(--line2);border-radius:var(--seg-radius);
+  box-shadow:var(--bevel);transition:background .14s,color .14s;}
+.gplay:hover,.gside:hover{background:var(--accentbg);color:var(--fg);}
+.gplay.on,.gplay:active{background:var(--accent);color:var(--fg-inv);}
+.ghint{font-size:9.5px;letter-spacing:.06em;color:var(--dim3);}
+
+/* ---- 快捷键小抄 ---- */
+.help{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+.help.open{display:flex;}
+.helpbox{background:var(--panel3);border:1px solid var(--line3);border-radius:var(--radius);
+  padding:20px 24px;box-shadow:0 16px 44px rgba(0,0,0,.55);min-width:340px;}
+.helpbox h3{font-size:10px;letter-spacing:.22em;color:var(--dim3);text-transform:uppercase;
+  margin-bottom:14px;font-weight:600;}
+.helprow{display:flex;align-items:center;gap:12px;font-size:11.5px;color:var(--dim);
+  padding:4px 0;}
+.helprow kbd{min-width:26px;text-align:center;}
+.helprow b{margin-left:auto;color:var(--fg);font-weight:400;}
+
+/* ---- 温度曲线 ---- */
+.tmpbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  font-size:9.5px;letter-spacing:.08em;color:var(--dim3);margin-bottom:9px;}
+.tmpk{color:var(--dim2);}
+.tmpk b,.tmpk.r b{color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums;}
+.tmpk.r{margin-left:auto;color:var(--dim3);}
+
+/* ---- 事件流：可搜索时间线 ---- */
+.evbar{display:flex;align-items:center;gap:9px;padding:9px 11px;border-bottom:1px solid var(--line);}
+.evbar input{flex:1;min-width:0;font-family:inherit;font-size:11px;padding:5px 9px;
+  background:var(--well);color:var(--fg);border:1px solid var(--line2);
+  border-radius:var(--seg-radius);outline:none;}
+.evbar input:focus{border-color:var(--accent);}
+.evbar input::placeholder{color:var(--dim3);}
+.evbar .evf{display:flex;gap:0;}
+.evbar .evf button{font-family:inherit;font-size:9.5px;letter-spacing:.1em;padding:4px 10px;
+  cursor:pointer;background:var(--panel2);color:var(--dim2);border:1px solid var(--line2);
+  border-right:none;}
+.evbar .evf button:last-child{border-right:1px solid var(--line2);}
+.evbar .evf button.on{background:var(--fg);color:var(--fg-inv);}
+.evbar .evn{font-size:9.5px;color:var(--dim3);letter-spacing:.1em;white-space:nowrap;}
+
+
+.sec{margin-bottom:30px;}
+.sec>h2{font-size:10px;letter-spacing:.24em;color:#8a8a8a;font-weight:600;
+  text-transform:uppercase;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid #1e1e1e;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(560px,1fr));gap:22px;align-items:start;}
+
+/* --- 一张"模拟界面"，容器本身就是 main 的底色 ---
+   这几条 mock 规则写在主题块【之后】，同权重会盖掉主题，所以凡是要跟随
+   主题的质感，这里一律走钩子变量，不能写死。 */
+.mock{border:1px solid var(--line2);border-radius:var(--radius);overflow:hidden;background:var(--bg);color:var(--txt);
+  font-family:var(--mono);}
+.mock .bar-top{height:30px;display:flex;align-items:stretch;border-bottom:1px solid var(--line2);background:var(--panel);}
+.mock .brand{display:flex;align-items:center;gap:8px;padding:0 12px;font-size:10.5px;letter-spacing:.2em;color:var(--fg);font-weight:600;border-right:1px solid var(--line);}
+.mock .brand .mark{width:14px;height:14px;border:1px solid var(--dim);position:relative;flex:0 0 14px;
+  border-radius:var(--radius);}
+.mock .tab{padding:0 13px;display:flex;align-items:center;font-size:10.5px;letter-spacing:.1em;color:var(--dim2);}
+.mock .tab.on{color:var(--fg);}
+.mock .sp{margin-left:auto;}
+.mock .stat{padding:0 12px;display:flex;align-items:center;font-size:10px;letter-spacing:.1em;color:var(--dim2);border-left:1px solid var(--line);}
+.mock .body{display:flex;min-height:330px;}
+.mock .side{width:132px;flex:0 0 132px;border-right:1px solid var(--line2);background:var(--panel);padding:8px 0;}
+.mock .navitem{display:flex;align-items:center;gap:8px;padding:6px 12px;color:var(--dim2);font-size:11px;letter-spacing:.05em;border-left:2px solid transparent;}
+.mock .navitem.on{color:var(--fg);background:var(--panel2);border-left-color:var(--accent);}
+.mock .navitem em{font-style:normal;color:var(--dim3);font-size:9.5px;width:16px;}
+.mock .main{flex:1;padding:11px;background:var(--bg);min-width:0;}
+.mock .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.mock .g4 .kpi{min-width:0;}
+.mock .kpi .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mock .mt2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+
+.panel{border:1px solid var(--line2);background:var(--panel);border-radius:var(--radius);
+  box-shadow:var(--bevel),var(--lift);background-image:var(--panel-img);
+  background-repeat:no-repeat;background-position:top left;background-size:var(--panel-img-size);}
+.panel>.hd{display:flex;align-items:center;gap:8px;height:28px;padding:0 10px;border-bottom:1px solid var(--line);
+  background:var(--panel2);border-radius:var(--radius) var(--radius) 0 0;
+  background-image:var(--btn-img);background-repeat:no-repeat;background-position:top left;}
+.panel>.hd h3{font-size:9.5px;letter-spacing:.2em;font-weight:600;color:var(--fg);text-transform:uppercase;}
+.panel>.hd .meta{margin-left:auto;font-size:9px;color:var(--dim3);letter-spacing:.1em;}
+.panel>.bd{padding:11px;}
+
+.kpi{padding:10px 11px 9px;border-radius:max(0px,calc(var(--radius) - 1px));}
+.kpi .lbl{font-size:9px;letter-spacing:.2em;color:var(--dim2);display:flex;justify-content:space-between;text-transform:uppercase;}
+.kpi .lbl s{text-decoration:none;color:var(--dim3);border:1px solid var(--line2);padding:0 3px;font-size:8.5px;}
+.kpi .val{font-size:23px;font-weight:600;letter-spacing:-.02em;margin:8px 0 2px;font-variant-numeric:tabular-nums;line-height:1;}
+.kpi .val small{font-size:11px;font-weight:400;color:var(--dim2);margin-left:3px;}
+.kpi .sub{font-size:9.5px;color:var(--dim2);}
+.kpi .spark{margin-top:8px;height:22px;}
+
+.bar{height:5px;background:var(--well2);border:1px solid var(--line);margin-top:7px;
+  border-radius:var(--bar-radius);box-shadow:inset 0 1px 2px var(--bar-inset);}
+.bar>div{height:100%;background:var(--accent);border-radius:var(--bar-radius);
+  background-image:var(--bar-img);box-shadow:inset 0 1px 0 var(--bar-gloss);}
+
+.row{display:flex;align-items:center;gap:9px;margin-top:9px;font-size:10.5px;color:var(--dim);}
+.row>span:first-child{flex:0 0 auto;white-space:nowrap;}
+.seg{display:flex;border:1px solid var(--line2);border-radius:var(--seg-radius);overflow:hidden;
+  box-shadow:inset 0 1px 2px var(--bar-inset);}
+.seg button{font-family:inherit;font-size:10px;letter-spacing:.1em;padding:3px 11px;cursor:pointer;
+  background:var(--panel2);color:var(--dim2);border:none;border-right:1px solid var(--line2);
+  background-image:var(--btn-img);background-repeat:no-repeat;}
+.seg button:last-child{border-right:none;}
+.seg button.on{background:var(--fg);color:var(--fg-inv);background-image:var(--bar-img);}
+.tag{border:1px solid var(--line2);padding:0 5px;font-size:9px;color:var(--dim2);border-radius:var(--tag-radius);}
+
+.coregrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
+.core{border:1px solid var(--line2);background:var(--panel2);padding:6px 4px 7px;text-align:center;
+  border-radius:var(--radius);box-shadow:var(--bevel);background-image:var(--panel-img);
+  background-repeat:no-repeat;background-position:top left;background-size:var(--panel-img-size);}
+.core .id{font-size:8.5px;color:var(--dim3);letter-spacing:.06em;}
+.core .v{font-size:12px;font-weight:600;margin:4px 0 5px;font-variant-numeric:tabular-nums;}
+.core .bar{height:3px;margin-top:0;}
+
+table{width:100%;border-collapse:collapse;font-size:10.5px;}
+th{text-align:left;font-size:9px;letter-spacing:.16em;color:var(--dim3);font-weight:600;
+  padding:0 8px 8px;border-bottom:1px solid var(--line2);text-transform:uppercase;}
+td{padding:5px 8px;border-bottom:1px solid var(--line);color:var(--dim);}
+td.mono{font-variant-numeric:tabular-nums;color:var(--fg);}
+
+.events{background:var(--well);border:1px solid var(--line);border-radius:var(--radius);padding:9px 10px;
+  box-shadow:inset 0 1px 2px var(--bar-inset);}
+.events div{font-size:10.5px;color:var(--dim2);padding:1px 0;}
+.events b{color:var(--fg);font-weight:500;}
+.lv{font-size:8.5px;letter-spacing:.16em;margin-right:7px;padding:0 4px;}
+.lv.INFO{color:var(--dim3);}
+.lv.ALERT{color:var(--fg-inv);background:var(--fg);}
+
+/* --- 色卡 --- */
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px;}
+.sw .c{border:1px solid #242424;padding:9px 10px;background:#0d0d0d;}
+.sw .c i{display:block;height:26px;margin-bottom:7px;}
+.sw .c b{display:block;font-size:10px;color:#bbb;font-weight:400;letter-spacing:.06em;}
+.sw .c s{display:block;text-decoration:none;font-size:9px;color:#666;margin-top:2px;}
+
+.note{font-size:10px;color:#666;line-height:1.7;margin-top:9px;}
+.note b{color:#999;font-weight:500;}
+
+@media(max-width:960px){.grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<h1>Vitals // STYLE PREVIEW</h1>
+<div class="sub">静态预览板，不连后端。当前提供 9 套风格，每套 8 支强调色。</div>
+
+<div class="sec">
+  <h2>01 · 界面风格对照</h2>
+  <div class="grid" id="mockgrid"></div>
+  <div class="note">
+    <b>Default</b>：初版那套。纯黑底、直角、灰阶、等宽字，硬核仪表盘的路子。<br>
+    <b>Modern</b>：苹果那一挂。近白的冷灰底 + 白色玻璃卡片，圆角开到 20px，
+    层次全靠留白和一层毛玻璃撑起来。没有花纹、没有描边线、没有渐变块。<br>
+    <b>Frutiger Aero</b>：清透的蓝天、草地、水珠和玻璃气泡。2004-2013 那一波"自然 + 科技 + 乐观"。
+    底色是干净的天空蓝 → 水青，右上角一团阳光；质感靠水润的玻璃高光和拟物反光，不是塑料的。<br>
+    <b>Rococo</b>：18 世纪法国装饰艺术。奶油粉底色配玫瑰、薰衣草、薄荷的光晕，面板像上釉的瓷器，
+    圆角开到最大、边缘用柔化的玫瑰唇线——洛可可的规矩是不许出现锐利的东西，也不许出现重颜色。<br>
+    <b>Soviet</b>：苏联构成主义。1920 年代苏联先锋派那一路（罗德琴科、塔特林、李西茨基）。
+    红 + 黑 + 米白，一道巨大的红色斜切色块，硬边矩形、粗重的无衬线字、硬投影。
+    要的是平面上的"力量感"——没有渐变、没有圆角、没有一丝柔软的东西。<br>
+    <b>Ink</b>：国风。生宣那种带灰黄的暖白打底，墨色是掺了青的松烟墨，只在品牌标记和告警上点一枚朱砂。
+    圆角收到近乎直角、线条细到刚好看得见、标题不用粗体压——留白比装饰重要。<br>
+    <b>Cyberpunk</b>：深蓝紫的夜 + 七团霓虹光雾（品红/青/紫/黄/绿/橙/蓝）。发光边框、霓虹灯管标题、
+    锋利直角，背景换成远近两层城市天际线剪影 + 一道地平线辉光。参照 synthwave 和赛博朋克 2077。<br>
+    <b>NASA</b>：近黑的深空 + 极暗的星云余晖 + 拉丝金属面板 + 橙红识别条。
+    星点压得很低，面板是暗色金属板，顶上那道橙条是唯一的一抹暖色——深沉，不抢戏。<br>
+    <b>Hacker</b>：千禧年前后互联网对黑客的想象——夜视绿 CRT 终端、母体代码雨、扫描线。
+    主色只有一味荧光绿，其余全是黑。背景那层乱码雨是真在滚的字符（片假名 + 数字），
+    由一块全屏画布持续下淌，不是贴静态图。<br>
+    质感不是靠换色堆出来的：每套主题覆写的是同一组变量（圆角、高光层、浮雕、投影、进度条渐变），
+    组件本身一行没改。小游戏的棋盘（贪吃蛇 / 五子棋）、蛇身和棋子也是从这组变量里取色，
+    换主题自动跟着走。温度曲线和首页卡片同理。
+  </div>
+</div>
+
+<div class="sec">
+  <h2>02 · 强调色</h2>
+  <div class="grid" id="accgrid"></div>
+  <div class="note">
+    强调色跟着风格走，每套各有一张表。浅底上放荧光绿会糊，深底上放深蓝会看不见，
+    所以不能共用一份色表。
+  </div>
+</div>
+
+<script>
+const THEMES=[
+  {k:'mono',n:'Default',
+   sw:'linear-gradient(135deg,#151515 0%,#7c7c7c 54%,#e9e9e9 100%)',
+   acc:[['冷白蓝','#8fb8d8'],['冰蓝','#7fd4ff'],['青','#4fe3c1'],['琥珀','#ffb454'],
+        ['朱红','#ff6b5e'],['终端绿','#7ee787'],['品红','#ff7ad9'],['纯白','#ffffff']]},
+  {k:'modern',n:'Modern',
+   sw:'linear-gradient(135deg,#ffffff 0%,#e4e4e9 48%,#0071e3 100%)',
+   acc:[['苹果蓝','#0071e3'],['石墨','#1d1d1f'],['湖蓝','#2b7fd4'],['薄荷','#00a37a'],
+        ['珊瑚','#ff3b30'],['紫','#7d5fd8'],['橙','#ff9500'],['银灰','#8e8e93']]},
+  {k:'aero',n:'Frutiger Aero',
+   sw:'linear-gradient(180deg,#7fc7ee 0%,#bfe6f4 55%,#8cd696 100%)',
+   acc:[['天空蓝','#1f8fe0'],['水青','#159ba8'],['草绿','#2fa84f'],['阳光黄','#e8a300'],
+        ['珊瑚','#f2653f'],['莓红','#d12c66'],['薰衣草','#7a5fd0'],['石墨','#4a6a8c']]},
+  {k:'rococo',n:'Rococo',
+   sw:'linear-gradient(135deg,#fbe0ea 0%,#f0ddf4 48%,#e2f0e8 100%)',
+   acc:[['玫瑰粉','#d96a95'],['金箔','#c39a3e'],['薰衣草','#9b86c4'],['薄荷','#6fb3a2'],
+        ['珍珠白','#fdf8f4'],['珊瑚粉','#e08575'],['瓷蓝','#7ba0c0'],['蔷薇','#c4487a']]},
+  {k:'soviet',n:'Soviet',
+   sw:'linear-gradient(115deg,#efe9dd 0%,#efe9dd 32%,#d32027 32%,#d32027 62%,#1a1a1a 62%,#1a1a1a 100%)',
+   acc:[['构成红','#d32027'],['黑','#1a1a1a'],['米白','#efe9dd'],['钢灰','#6b6459'],
+        ['深绯','#a3161c'],['赭石','#b06a2c'],['军绿','#4a5230'],['钴蓝','#1f3a8a']]},
+  {k:'ink',n:'Ink',
+   sw:'linear-gradient(135deg,#f8f5ec 0%,#e3ddcb 52%,#3a3d38 100%)',
+   acc:[['松烟墨','#3a3d38'],['朱砂','#a8372c'],['黛青','#4a5450'],['赭石','#8a6a3c'],
+        ['藤黄','#b8933a'],['花青','#3d5266'],['胭脂','#8a4257'],['石绿','#5c7360']]},
+  {k:'cyber',n:'Cyberpunk',
+   sw:'linear-gradient(135deg,#120a2e 0%,#00e5ff 48%,#ff2d95 100%)',
+   acc:[['霓虹青','#00e5ff'],['霓虹品红','#ff2d95'],['霓虹紫','#b537ff'],['霓虹黄','#ffe14d'],
+        ['霓虹绿','#3dffa0'],['霓虹橙','#ff7a3d'],['故障红','#ff3355'],['冰白','#eaf6ff']]},
+  {k:'nasa',n:'NASA',
+   sw:'linear-gradient(135deg,#020306 0%,#39435c 55%,#fc3d21 100%)',
+   acc:[['NASA 橙','#fc3d21'],['琥珀','#ff8a3d'],['星蓝','#3d7bff'],['天青','#25c4e0'],
+        ['星光白','#eaf3ff'],['翠绿','#00d68f'],['金黄','#ffc93d'],['星云紫','#9b6bff']]},
+  {k:'hacker',n:'Hacker',
+   sw:'linear-gradient(135deg,#000600 0%,#00ff66 58%,#0a5326 100%)',
+   acc:[['荧光绿','#00ff66'],['磷光','#7dffab'],['深潭绿','#12a04c'],['薄荷电','#5cffc4'],
+        ['琥珀告警','#ffd23d'],['血橙','#ff5c2d'],['冰蓝','#5cd8ff'],['白噪','#e8ffe8']]}
+];
+
+/* 一张模拟卡片的骨架，所有主题共用同一份 HTML */
+function mockHTML(){
+  return `
+  <div class="bar-top">
+    <div class="brand"><div class="mark"></div>Vitals</div>
+    <div class="tab on">概览</div><div class="tab">处理器</div><div class="tab">内存</div>
+    <div class="sp"></div>
+    <div class="stat">ONLINE</div><div class="stat">HOST</div>
+  </div>
+  <div class="body">
+    <div class="side">
+      <div class="navitem on"><em>01</em>概览</div>
+      <div class="navitem"><em>02</em>处理器</div>
+      <div class="navitem"><em>03</em>显卡</div>
+      <div class="navitem"><em>04</em>内存</div>
+      <div class="navitem"><em>05</em>存储</div>
+      <div class="navitem"><em>06</em>网络</div>
+    </div>
+    <div class="main">
+      <div class="g4">
+        <div class="panel kpi">
+          <div class="lbl"><span>CPU</span><s>%</s></div>
+          <div class="val">17.4<small>%</small></div>
+          <div class="sub">32 线程</div>
+          <div class="bar"><div style="width:17.4%"></div></div>
+        </div>
+        <div class="panel kpi">
+          <div class="lbl"><span>内存</span><s>%</s></div>
+          <div class="val">46.0<small>%</small></div>
+          <div class="sub">14.58 / 31.73 GB</div>
+          <div class="bar"><div style="width:46%"></div></div>
+        </div>
+        <div class="panel kpi">
+          <div class="lbl"><span>CPU 温度</span><s>&deg;C</s></div>
+          <div class="val">73<small>&deg;C</small></div>
+          <div class="sub">封装 / 核心</div>
+          <div class="bar"><div style="width:73%"></div></div>
+        </div>
+        <div class="panel kpi">
+          <div class="lbl"><span>网络</span><s>/S</s></div>
+          <div class="val">57<small>KB</small></div>
+          <div class="sub">峰值 3.01 MB/S</div>
+          <div class="bar"><div style="width:31%"></div></div>
+        </div>
+      </div>
+
+      <div class="mt2">
+        <div class="panel">
+          <div class="hd"><h3>CPU 使用率</h3><span class="meta">均值 15.7%</span></div>
+          <div class="bd">
+            <div class="row"><span>核心</span>
+              <div class="coregrid">
+                <div class="core"><div class="id">C00</div><div class="v">71</div><div class="bar"><div style="width:71%"></div></div></div>
+                <div class="core"><div class="id">C01</div><div class="v">64</div><div class="bar"><div style="width:64%"></div></div></div>
+                <div class="core"><div class="id">C02</div><div class="v">80</div><div class="bar"><div style="width:80%"></div></div></div>
+                <div class="core"><div class="id">C03</div><div class="v">59</div><div class="bar"><div style="width:59%"></div></div></div>
+              </div>
+            </div>
+            <div class="row" style="margin-top:12px">
+              <span>视图</span>
+              <div class="seg">
+                <button class="on">使用率</button><button>单核</button><button>频率</button>
+              </div>
+              <span class="tag" style="margin-left:auto">LIVE</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="hd"><h3>进程 · CPU 占用</h3></div>
+          <div class="bd" style="padding:9px 11px 11px">
+            <table>
+              <tr><th>PID</th><th>进程</th><th>CPU %</th></tr>
+              <tr><td class="mono">17340</td><td>WmiPrvSE.exe</td><td class="mono">140.8</td></tr>
+              <tr><td class="mono">17216</td><td>WorkBuddy.exe</td><td class="mono">68.4</td></tr>
+              <tr><td class="mono">4</td><td>System</td><td class="mono">37.4</td></tr>
+            </table>
+            <div class="events" style="margin-top:10px">
+              <div><span class="lv INFO">INFO</span>探针已连接 <b>127.0.0.1:8765</b></div>
+              <div><span class="lv ALERT">ALERT</span>磁盘 D: 使用率 <b>48%</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+const mg=document.getElementById('mockgrid');
+mg.innerHTML=THEMES.map(t=>`
+  <div>
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
+      <i style="width:34px;height:12px;display:block;background:${t.sw};border:1px solid #2a2a2a"></i>
+      <b style="font-size:11px;color:#ccc;font-weight:500;letter-spacing:.12em">${t.n}</b>
+    </div>
+    <div class="mock" data-theme="${t.k}">${mockHTML()}</div>
+  </div>`).join('');
+
+const ag=document.getElementById('accgrid');
+ag.innerHTML=THEMES.map(t=>`
+  <div>
+    <div style="font-size:10px;letter-spacing:.16em;color:#8a8a8a;margin-bottom:9px">${t.n}</div>
+    <div class="sw">
+      ${t.acc.map(([n,c])=>`<div class="c"><i style="background:${c}"></i><b>${n}</b><s>${c}</s></div>`).join('')}
+    </div>
+  </div>`).join('');
+</script>
+</body>
+</html>

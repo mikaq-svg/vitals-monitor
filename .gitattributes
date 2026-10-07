@@ -1,0 +1,7 @@
+# 行尾一律不做转换。
+#
+# start.bat / stop.bat / start.vbs 是 GBK 编码的 Windows 脚本，本机
+# core.autocrlf 开着，若让 git 参与行尾转换，克隆出来可能就不是原样了
+# （.bat 的 goto 标签对行尾敏感）。这个仓库的文件本身也不大，统一按
+# 二进制原样存取最省事。
+* -text
