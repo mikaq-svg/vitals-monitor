@@ -6,7 +6,12 @@
 
 ## 怎么打开
 
-双击文件夹里的 `start.vbs`。
+**先确认一件事**：文件夹里有没有一个叫 `runtime` 的子文件夹。
+
+- **有** —— 这台电脑不需要另外装任何东西，直接看下一步。
+- **没有** —— 这台电脑需要先安装 Python 3。到 https://www.python.org/downloads/ 下载，安装时**必须勾选 `Add python.exe to PATH`**，否则启动器找不到它。
+
+确认完之后，双击文件夹里的 `start.vbs`。
 
 黑窗口不会出现，浏览器会自己开出来，而且没有地址栏、标签页那些东西，看着就跟一个正经的桌面软件一样。
 
@@ -181,7 +186,12 @@ A hardware monitor that runs on your own PC. Dark, hardcore, and everything stay
 
 ## How to open it
 
-Double-click `start.vbs` inside the folder.
+**Check one thing first**: does the folder contain a subfolder named `runtime`?
+
+- **Yes** — nothing else needs installing on this machine. Go to the next step.
+- **No** — this machine needs Python 3 first. Get it from https://www.python.org/downloads/ and **tick `Add python.exe to PATH`** during setup, otherwise the launcher cannot find it.
+
+Once that is settled, double-click `start.vbs` inside the folder.
 
 No black window appears. The browser opens by itself, and it has no address bar, no tabs, no bookmarks — it looks like a regular desktop application.
 
